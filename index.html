@@ -259,6 +259,7 @@
     <h2>Team Scheduler</h2>
     <div class="header-right">
       <span><span class="status-dot" id="status-dot"></span><span id="status-text">Connecting...</span></span>
+      <span style="font-size:0.7em;color:var(--text-dim);opacity:0.5;">v1.3</span>
       <button class="btn-small" id="admin-toggle-btn" onclick="toggleAdmin()">Admin</button>
       <button class="btn-small" onclick="logout()">Switch User</button>
     </div>
@@ -580,22 +581,26 @@ function setPaint(status, btn) {
   if (btn) btn.classList.add('active');
 }
 
+let lastPaintedKey = null;
+
 function startPaint(day, time) {
   if (!currentUser || activeTab !== currentUser) return;
   isPainting = true;
   const data = allData[currentUser] || {};
   const key = `${day}|${time}`;
   const current = data[key] || '';
+  lastPaintedKey = key;
 
   // If cell is empty, apply the selected paint mode
-  // If cell has a value, cycle to the next status in the chain
+  // If cell has a value, cycle: A -> M -> B -> clear -> A
   if (current === '') {
-    dragPaintVal = paintStatus || CYCLE[0]; // empty paintStatus = eraser, use first in cycle
+    dragPaintVal = paintStatus || CYCLE[0];
   } else {
-    // Always cycle from current value: A -> M -> B -> clear -> A
     const idx = CYCLE.indexOf(current);
     dragPaintVal = CYCLE[(idx + 1) % CYCLE.length];
   }
+
+  console.log(`[paint] tap key=${key} was="${current}" now="${dragPaintVal}" paintMode=${paintStatus}`);
 
   if (dragPaintVal) data[key] = dragPaintVal;
   else delete data[key];
@@ -605,8 +610,11 @@ function startPaint(day, time) {
 
 function continuePaint(day, time) {
   if (!isPainting || dragPaintVal === null || !currentUser) return;
-  const data = allData[currentUser] || {};
   const key = `${day}|${time}`;
+  // Skip if this is the same cell we just tapped in startPaint
+  if (key === lastPaintedKey) return;
+  lastPaintedKey = key;
+  const data = allData[currentUser] || {};
   if (dragPaintVal) data[key] = dragPaintVal;
   else delete data[key];
   allData[currentUser] = data;
@@ -624,8 +632,8 @@ function debounceSave() {
   saveTimeout = setTimeout(() => { if (currentUser && allData[currentUser]) saveSchedule(currentUser, allData[currentUser]); }, 500);
 }
 
-document.addEventListener('mouseup', () => { if (isPainting) { isPainting = false; dragPaintVal = null; debounceSave(); } });
-document.addEventListener('touchend', () => { if (isPainting) { isPainting = false; dragPaintVal = null; debounceSave(); } });
+document.addEventListener('mouseup', () => { if (isPainting) { isPainting = false; dragPaintVal = null; lastPaintedKey = null; debounceSave(); } });
+document.addEventListener('touchend', () => { if (isPainting) { isPainting = false; dragPaintVal = null; lastPaintedKey = null; debounceSave(); } });
 
 function handleTouchMove(e) {
   if (!isPainting) return;
