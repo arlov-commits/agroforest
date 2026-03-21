@@ -31,10 +31,10 @@
     /* Match tiers — only for 2+ people */
     --t1: #a0d89a; --t1-text: #0d3a1e;   /* green: 2+ available */
     --t2: #e0d4b0; --t2-text: #5a4a28;   /* tan: 1 avail + 1+ maybe */
-    --t3: #cfc0e0; --t3-text: #3a2860;   /* purple: 2+ maybe, no avail */
+    --t3: #b8d4e8; --t3-text: #1e3a50;   /* soft blue: 2+ maybe, no avail */
     --t1-dot: #2a8a3e;
     --t2-dot: #a08840;
-    --t3-dot: #7050a0;
+    --t3-dot: #3a7aa0;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
@@ -157,6 +157,8 @@
 
   /* Overview cells */
   td.overview-cell { padding: 3px 2px; min-width: 90px; vertical-align: top; background: var(--surface); }
+  td.overview-cell.clickable { cursor: pointer; }
+  td.overview-cell.clickable:hover { filter: brightness(0.95); }
   td.overview-cell.lunch-hour { border-top: 1.5px solid var(--border-strong); border-bottom: 1.5px solid var(--border-strong); }
   td.overview-cell.lunch-hour:not([data-lvl]) { background: var(--lunch-bg); }
   .ov-tags { display: flex; flex-wrap: wrap; gap: 2px; justify-content: center; }
@@ -257,7 +259,7 @@
   <header>
     <h2>Team Scheduler</h2>
     <div class="header-right">
-      <span style="font-size:0.7em;color:var(--text-dim);opacity:0.5;">v1.7</span>
+      <span style="font-size:0.7em;color:var(--text-dim);opacity:0.5;">v1.8</span>
       <span><span class="status-dot" id="status-dot"></span><span id="status-text">Connecting...</span></span>
       <button class="btn-small" id="admin-toggle-btn" onclick="toggleAdmin()">Admin</button>
       <button class="btn-small" onclick="logout()">Switch User</button>
@@ -454,7 +456,17 @@ function switchTab(tab){
   activeTab=tab;
   document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.tab===tab));
   const toolbar=document.getElementById('paint-toolbar-container'),grid=document.getElementById('grid-container');
-  if(tab==='overview'){toolbar.innerHTML='';renderOverview();}
+  if(tab==='overview'){
+    if(currentUser){
+      toolbar.innerHTML=`<div class="paint-toolbar"><span class="paint-label">Your status:</span>
+        <button class="paint-btn ${paintStatus==='cycle'?'active':''}" data-status="cycle" onclick="setPaint('cycle',this)">⇄ Switcher</button>
+        <button class="paint-btn ${paintStatus==='A'?'active':''}" data-status="A" onclick="setPaint('A',this)">✓ Available</button>
+        <button class="paint-btn ${paintStatus==='M'?'active':''}" data-status="M" onclick="setPaint('M',this)">~ Maybe</button>
+        <button class="paint-btn ${paintStatus==='B'?'active':''}" data-status="B" onclick="setPaint('B',this)">✗ Busy</button>
+        <button class="paint-btn ${paintStatus==='clear'?'active':''}" data-status="clear" onclick="setPaint('clear',this)">Eraser</button></div>`;
+    } else { toolbar.innerHTML=''; }
+    renderOverview();
+  }
   else if(tab==='add'){
     toolbar.innerHTML='';
     grid.innerHTML=`<div class="add-panel"><h3 style="margin-bottom:16px;">Add Team Member</h3>
@@ -466,7 +478,7 @@ function switchTab(tab){
     if(canEdit){
       const note=!isMe?' <span style="color:var(--orange);font-size:0.8em;">(editing as admin)</span>':'';
       toolbar.innerHTML=`<div class="paint-toolbar"><span class="paint-label">Status:${note}</span>
-        <button class="paint-btn ${paintStatus==='cycle'?'active':''}" data-status="cycle" onclick="setPaint('cycle',this)">⟳ Cycle</button>
+        <button class="paint-btn ${paintStatus==='cycle'?'active':''}" data-status="cycle" onclick="setPaint('cycle',this)">⇄ Switcher</button>
         <button class="paint-btn ${paintStatus==='A'?'active':''}" data-status="A" onclick="setPaint('A',this)">✓ Available</button>
         <button class="paint-btn ${paintStatus==='M'?'active':''}" data-status="M" onclick="setPaint('M',this)">~ Maybe</button>
         <button class="paint-btn ${paintStatus==='B'?'active':''}" data-status="B" onclick="setPaint('B',this)">✗ Busy</button>
@@ -535,8 +547,8 @@ function renderEditGrid(name,editable){
 // ===== MATCH TIERS =====
 // Tier 1 (green):  2+ Available
 // Tier 2 (tan):    1 Available + 1+ Maybe
-// Tier 3 (purple): 2+ Maybe, 0 Available
-// 0 = no highlight (fewer than 2 people total, or just 1 person)
+// Tier 3 (soft blue): 2+ Maybe, 0 Available
+// 0 = no highlight (fewer than 2 people total)
 function getTier(avail, maybe) {
   if (avail >= 2) return 1;
   if (avail === 1 && maybe >= 1) return 2;
@@ -544,9 +556,38 @@ function getTier(avail, maybe) {
   return 0;
 }
 
+// ===== OVERVIEW CLICK =====
+function ovClick(day, time) {
+  if (!currentUser) return;
+  const data = allData[currentUser] || {};
+  const key = `${day}|${time}`;
+  const cur = data[key] || '';
+
+  let newVal;
+  if (paintStatus === 'cycle') {
+    // Switcher: cycle through A -> M -> B -> clear
+    if (cur === '') newVal = 'A';
+    else { const idx = CYCLE.indexOf(cur); newVal = CYCLE[(idx+1)%CYCLE.length]; }
+  } else if (paintStatus === 'clear') {
+    newVal = '';
+  } else {
+    // A/M/B: overpaint directly
+    newVal = paintStatus;
+  }
+
+  if (newVal) data[key] = newVal;
+  else delete data[key];
+  allData[currentUser] = data;
+
+  clearTimeout(saveTimeout);
+  saveTimeout = setTimeout(() => { saveSchedule(currentUser, allData[currentUser]); }, 500);
+  renderOverview();
+}
+
 // ===== OVERVIEW =====
 function renderOverview(){
   const names=Object.keys(allData).filter(n=>n!=='__admins__');
+  const hasUser = !!currentUser;
   let html='<table><thead><tr><th class="time-col">Time</th>';
   for(const day of DAYS) html+=`<th>${day}</th>`;
   html+='</tr></thead><tbody>';
@@ -572,7 +613,9 @@ function renderOverview(){
       }
       const tier=getTier(ac,mc);
       const lvlAttr=tier>0?` data-lvl="${tier}"`:'';
-      html+=`<td class="overview-cell${lunch?' lunch-hour':''}"${lvlAttr}><div class="ov-tags">${tags}</div></td>`;
+      const clickAttr=hasUser?` onclick="ovClick('${esc(day)}','${time}')"`:'';
+      const clickClass=hasUser?' clickable':'';
+      html+=`<td class="overview-cell${clickClass}${lunch?' lunch-hour':''}"${lvlAttr}${clickAttr}><div class="ov-tags">${tags}</div></td>`;
       dayData[day][time]={ac,mc,ap,mp};
     }
     html+='</tr>';
