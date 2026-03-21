@@ -13,35 +13,39 @@
     --text-dim: #6e655c;
     --accent: #b5422a;
     --accent-hover: #963522;
-    --green: #1e5e3f;
-    --green-bg: #c8e4c3;
-    --green-text: #0f3d22;
+    --green: #1a5c3a;
+    --green-bg: #b8e0b2;
+    --green-text: #0d3a1e;
     --yellow: #7d6218;
-    --yellow-bg: #f2e4b8;
+    --yellow-bg: #f0e0a0;
     --yellow-text: #4a3a0e;
     --orange: #a8500e;
+    --orange-bg: #f5d4a8;
+    --orange-text: #6e3408;
     --red: #8e3518;
     --red-bg: #f0cfc4;
     --red-text: #5a2210;
     --border: #d4ccc2;
     --border-strong: #b5ada4;
-    --lunch-bg: #e4e0da;
+    --lunch-bg: #ddd9d2;
+    /* Match levels */
+    --lvl1: #a0d89a; --lvl1-text: #0d3a1e;
+    --lvl2: #c8e4a0; --lvl2-text: #2a4a10;
+    --lvl3: #f0e0a0; --lvl3-text: #4a3a0e;
+    --lvl4: #f5d4a8; --lvl4-text: #6e3408;
+    --lvl5: #e8d0c0; --lvl5-text: #5a4030;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    overflow-x: hidden;
+    background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden;
   }
 
-  /* --- LOGIN --- */
   #login-screen {
     display: flex; flex-direction: column; align-items: center; justify-content: center;
     min-height: 100vh; padding: 20px;
   }
-  #login-screen h1 { font-size: 2em; margin-bottom: 8px; color: var(--text); }
+  #login-screen h1 { font-size: 2em; margin-bottom: 8px; }
   #login-screen p { color: var(--text-dim); margin-bottom: 24px; }
   #login-screen input {
     padding: 12px 16px; font-size: 1.1em; border: 2px solid var(--border); border-radius: 8px;
@@ -62,14 +66,13 @@
   }
   .user-chip:hover { border-color: var(--accent); background: var(--surface2); }
 
-  /* --- APP --- */
   #app-screen { display: none; }
   header {
     display: flex; align-items: center; justify-content: space-between;
     padding: 12px 16px; background: var(--surface); border-bottom: 1px solid var(--border);
     position: sticky; top: 0; z-index: 100;
   }
-  header h2 { font-size: 1.1em; color: var(--text); }
+  header h2 { font-size: 1.1em; }
   .status-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; }
   .status-dot.live { background: var(--green); }
   .status-dot.offline { background: var(--red); }
@@ -81,7 +84,16 @@
   .btn-small:hover { border-color: var(--accent); color: var(--accent); }
   .btn-small.admin-active { border-color: var(--orange); color: var(--orange); }
 
-  /* --- TABS --- */
+  .admin-bar {
+    padding: 6px 16px; background: rgba(184,92,26,0.06); border-bottom: 1px solid rgba(184,92,26,0.15);
+    font-size: 0.82em; color: var(--orange); display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  }
+  .admin-bar .del-btn {
+    padding: 3px 10px; border: 1px solid rgba(184,92,26,0.3); border-radius: 5px;
+    background: transparent; color: var(--orange); cursor: pointer; font-size: 0.85em; font-family: inherit;
+  }
+  .admin-bar .del-btn:hover { background: rgba(184,92,26,0.1); }
+
   .tabs {
     display: flex; gap: 0; padding: 0 8px; background: var(--surface);
     border-bottom: 1px solid var(--border); overflow-x: auto; -webkit-overflow-scrolling: touch;
@@ -94,13 +106,11 @@
   }
   .tab:hover { color: var(--text); }
   .tab.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 600; }
-  .tab.you-tab {
-    color: var(--green); font-weight: 700; background: rgba(45,106,79,0.06);
-    border-bottom-color: var(--green);
-  }
+  .tab.you-tab { color: var(--green); font-weight: 700; background: rgba(26,92,58,0.06); border-bottom-color: var(--green); }
   .tab.you-tab.active { color: var(--green); border-bottom-color: var(--green); }
+  .tab.delete-tab { color: var(--red); }
+  .tab.delete-tab:hover { color: var(--red); background: rgba(142,53,24,0.06); }
 
-  /* --- PAINT TOOLBAR --- */
   .paint-toolbar {
     display: flex; gap: 6px; padding: 10px 16px; background: var(--surface);
     border-bottom: 1px solid var(--border); flex-wrap: wrap; align-items: center;
@@ -123,14 +133,10 @@
   .paint-btn[data-status="cycle"].active { border-color: var(--accent); color: var(--accent); }
   .paint-label { color: var(--text-dim); font-size: 0.8em; margin-right: 4px; }
 
-  /* --- GRID --- */
   .grid-container { overflow-x: auto; padding: 8px; -webkit-overflow-scrolling: touch; }
   table { border-collapse: collapse; width: 100%; min-width: 700px; user-select: none; -webkit-user-select: none; }
   th, td { border: 1px solid var(--border); text-align: center; font-size: 0.8em; }
-  th {
-    background: var(--surface2); padding: 8px 4px; position: sticky; top: 0; z-index: 10;
-    font-weight: 600; color: var(--text);
-  }
+  th { background: var(--surface2); padding: 8px 4px; position: sticky; top: 0; z-index: 10; font-weight: 600; color: var(--text); }
   .time-col {
     position: sticky; left: 0; z-index: 5; background: var(--surface); padding: 4px 8px;
     white-space: nowrap; font-weight: 500; min-width: 70px; color: var(--text-dim);
@@ -142,59 +148,46 @@
     touch-action: none; background: var(--surface);
   }
   td.cell:hover { filter: brightness(0.96); }
-  td.cell[data-val="A"] { background: var(--green-bg); color: var(--green-text); }
-  td.cell[data-val="M"] { background: var(--yellow-bg); color: var(--yellow-text); }
-  td.cell[data-val="B"] { background: var(--red-bg); color: var(--red-text); }
-  td.cell.lunch-hour { border-left-color: var(--border-strong); border-right-color: var(--border-strong); }
+  td.cell[data-val="A"] { background: var(--green-bg); color: var(--green-text); font-weight: 600; }
+  td.cell[data-val="M"] { background: var(--yellow-bg); color: var(--yellow-text); font-weight: 600; }
+  td.cell[data-val="B"] { background: var(--red-bg); color: var(--red-text); font-weight: 600; }
+  td.cell.lunch-hour { border-top: 1.5px solid var(--border-strong); border-bottom: 1.5px solid var(--border-strong); }
   td.cell.lunch-hour:not([data-val="A"]):not([data-val="M"]):not([data-val="B"]) { background: var(--lunch-bg); }
 
-  /* Overview */
+  /* Overview cells */
   td.overview-cell { padding: 3px 2px; min-width: 90px; vertical-align: top; background: var(--surface); }
-  td.overview-cell.lunch-hour:not(.highlight-good) { background: var(--lunch-bg); }
+  td.overview-cell.lunch-hour { border-top: 1.5px solid var(--border-strong); border-bottom: 1.5px solid var(--border-strong); }
+  td.overview-cell.lunch-hour:not([data-lvl]) { background: var(--lunch-bg); }
   .ov-tags { display: flex; flex-wrap: wrap; gap: 2px; justify-content: center; }
-  .ov-tag { font-size: 0.7em; padding: 1px 5px; border-radius: 3px; white-space: nowrap; }
+  .ov-tag { font-size: 0.72em; padding: 1px 6px; border-radius: 3px; white-space: nowrap; font-weight: 600; }
   .ov-tag.avail { background: var(--green-bg); color: var(--green-text); }
   .ov-tag.maybe { background: var(--yellow-bg); color: var(--yellow-text); }
-  td.highlight-good { background: rgba(45,106,79,0.1); }
 
-  /* Summary rows at bottom of overview table */
-  tr.summary-spacer td { height: 12px; border: none; background: transparent; }
+  /* Match level highlighting */
+  td.overview-cell[data-lvl="1"] { background: var(--lvl1); }
+  td.overview-cell[data-lvl="2"] { background: var(--lvl2); }
+  td.overview-cell[data-lvl="3"] { background: var(--lvl3); }
+  td.overview-cell[data-lvl="4"] { background: var(--lvl4); }
+  td.overview-cell[data-lvl="5"] { background: var(--lvl5); }
+
+  /* Summary rows */
+  tr.summary-spacer td { height: 10px; border: none; background: transparent; }
   tr.summary-header td {
-    background: var(--surface2); font-weight: 700; font-size: 0.78em; color: var(--text-dim);
-    padding: 6px 4px; border-color: var(--border-strong); text-transform: uppercase; letter-spacing: 0.04em;
+    background: var(--surface2); font-weight: 700; font-size: 0.75em; color: var(--text-dim);
+    padding: 5px 4px; border-color: var(--border-strong); text-transform: uppercase; letter-spacing: 0.04em;
   }
   td.summary-cell {
-    background: var(--surface); padding: 6px 4px; vertical-align: top;
-    font-size: 0.72em; line-height: 1.5; border-color: var(--border); text-align: left;
+    background: var(--surface); padding: 5px 4px; vertical-align: top;
+    font-size: 0.72em; line-height: 1.6; border-color: var(--border); text-align: left;
   }
-  td.summary-cell .best-slot {
-    display: block; padding: 2px 0; color: var(--text);
-  }
-  td.summary-cell .best-slot .time-range {
-    font-weight: 600; color: var(--green-text);
-  }
-  td.summary-cell .best-slot .people-list {
-    color: var(--text-dim); font-size: 0.92em;
-  }
-  td.summary-cell .best-slot.hot-warning .time-range {
-    color: var(--orange);
-  }
-  td.summary-cell .best-slot.hot-warning::after {
-    content: ' (heat)'; color: var(--orange); font-style: italic; font-size: 0.9em;
-  }
-
-  /* Admin */
-  .admin-bar {
-    padding: 8px 16px; background: rgba(184,92,26,0.06); border-bottom: 1px solid rgba(184,92,26,0.15);
-    font-size: 0.82em; color: var(--orange); display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
-  }
-  .admin-bar .del-btn {
-    padding: 3px 10px; border: 1px solid rgba(184,92,26,0.3); border-radius: 5px;
-    background: transparent; color: var(--orange); cursor: pointer; font-size: 0.85em; font-family: inherit;
-  }
-  .admin-bar .del-btn:hover { background: rgba(184,92,26,0.1); }
-  .admin-bar .del-btn.danger { border-color: var(--red); color: var(--red); }
-  .admin-bar .del-btn.danger:hover { background: rgba(160,69,32,0.1); }
+  .best-slot { display: block; padding: 2px 0; }
+  .best-slot .sr { font-weight: 700; }
+  .best-slot .sr.l1 { color: var(--green-text); }
+  .best-slot .sr.l2 { color: var(--lvl2-text); }
+  .best-slot .sr.l3 { color: var(--yellow-text); }
+  .best-slot .sr.l4 { color: var(--orange-text); }
+  .best-slot .sp { color: var(--text-dim); font-size: 0.92em; }
+  .best-slot .hot-tag { color: var(--orange); font-style: italic; font-size: 0.9em; }
 
   /* Modal */
   .modal-bg {
@@ -203,13 +196,12 @@
   }
   .modal {
     background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
-    padding: 24px; max-width: 380px; width: 90%; box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+    padding: 24px; max-width: 400px; width: 90%; box-shadow: 0 8px 32px rgba(0,0,0,0.12);
   }
-  .modal h3 { margin-bottom: 12px; color: var(--text); }
+  .modal h3 { margin-bottom: 12px; }
   .modal input, .modal select {
     width: 100%; padding: 10px 12px; border: 2px solid var(--border); border-radius: 8px;
-    background: var(--bg); color: var(--text); font-size: 1em; margin-bottom: 12px; outline: none;
-    font-family: inherit;
+    background: var(--bg); color: var(--text); font-size: 1em; margin-bottom: 12px; outline: none; font-family: inherit;
   }
   .modal input:focus, .modal select:focus { border-color: var(--accent); }
   .modal-btns { display: flex; gap: 8px; justify-content: flex-end; }
@@ -218,16 +210,22 @@
     background: var(--surface2); color: var(--text); cursor: pointer; font-family: inherit;
   }
   .modal-btns button.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .modal-btns button.danger { background: var(--red); color: #fff; border-color: var(--red); }
   .modal-btns button:hover { opacity: 0.9; }
   .modal .error-msg { color: var(--red); font-size: 0.85em; margin-bottom: 8px; }
   .modal .info-msg { color: var(--text-dim); font-size: 0.82em; margin-bottom: 10px; line-height: 1.4; }
+  .modal .del-list { margin: 10px 0; }
+  .modal .del-list button {
+    display: block; width: 100%; text-align: left; padding: 10px 14px; margin-bottom: 4px;
+    border: 1px solid var(--border); border-radius: 6px; background: var(--surface);
+    color: var(--text); cursor: pointer; font-family: inherit; font-size: 0.95em;
+  }
+  .modal .del-list button:hover { border-color: var(--red); color: var(--red); background: rgba(142,53,24,0.04); }
 
-  /* Add panel */
   .add-panel { padding: 24px; text-align: center; }
   .add-panel input {
     padding: 10px 14px; border: 2px solid var(--border); border-radius: 8px;
-    background: var(--surface); color: var(--text); font-size: 1em; width: 220px;
-    margin-right: 8px; outline: none;
+    background: var(--surface); color: var(--text); font-size: 1em; width: 220px; margin-right: 8px; outline: none;
   }
   .add-panel input:focus { border-color: var(--accent); }
   .add-panel button {
@@ -247,7 +245,6 @@
 </head>
 <body>
 
-<!-- LOGIN -->
 <div id="login-screen">
   <h1>Team Scheduler</h1>
   <p>Pick your name or type a new one</p>
@@ -256,12 +253,11 @@
   <div class="existing-users" id="existing-users"></div>
 </div>
 
-<!-- APP -->
 <div id="app-screen">
   <header>
     <h2>Team Scheduler</h2>
     <div class="header-right">
-      <span style="font-size:0.7em;color:var(--text-dim);opacity:0.5;">v1.5</span>
+      <span style="font-size:0.7em;color:var(--text-dim);opacity:0.5;">v1.6</span>
       <span><span class="status-dot" id="status-dot"></span><span id="status-text">Connecting...</span></span>
       <button class="btn-small" id="admin-toggle-btn" onclick="toggleAdmin()">Admin</button>
       <button class="btn-small" onclick="logout()">Switch User</button>
@@ -276,548 +272,372 @@
 <div id="modal-container"></div>
 
 <script>
-// ===== CONFIG =====
 const SUPABASE_URL = 'https://nxjypjgqsywxukcnchmh.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im54anlwamdxc3l3eHVrY25jaG1oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQxMTAzNzQsImV4cCI6MjA4OTY4NjM3NH0.Hh1GErLUxJbswFJGi8xVEzD60AUkRX0JVPgo91pdVKY';
 
 const DAY_NAMES = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 const MONTH_NAMES = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 function buildDays() {
-  const days = [];
-  const d = new Date();
-  for (let i = 0; i < 10; i++) {
-    days.push(`${DAY_NAMES[d.getDay()]} ${MONTH_NAMES[d.getMonth()]} ${d.getDate()}`);
-    d.setDate(d.getDate() + 1);
-  }
+  const days = [], d = new Date();
+  for (let i = 0; i < 10; i++) { days.push(`${DAY_NAMES[d.getDay()]} ${MONTH_NAMES[d.getMonth()]} ${d.getDate()}`); d.setDate(d.getDate()+1); }
   return days;
 }
 const DAYS = buildDays();
-
 const TIMES = [];
-for (let h = 7; h < 18; h++) {
-  for (let m = 0; m < 60; m += 30) {
-    const hr = h > 12 ? h - 12 : h;
-    const ampm = h >= 12 ? 'PM' : 'AM';
-    TIMES.push(`${hr}:${m === 0 ? '00' : '30'} ${ampm}`);
-  }
+for (let h = 7; h < 18; h++) for (let m = 0; m < 60; m += 30) { const hr=h>12?h-12:h; TIMES.push(`${hr}:${m===0?'00':'30'} ${h>=12?'PM':'AM'}`); }
+
+function isLunchTime(t) { return t.startsWith('11:00') || t.startsWith('11:30'); }
+function isHotTime(t) { return ['1:00 PM','1:30 PM','2:00 PM','2:30 PM'].includes(t); }
+
+const CYCLE = ['A','M','B',''];
+const STATUS_SHORT = { A:'✓', M:'~', B:'✗' };
+
+let currentUser=null, allData={}, paintStatus='A', isPainting=false, activeTab='overview', isOnline=false, isAdmin=false, admins={}, dragPaintVal=null;
+
+// ===== SUPABASE =====
+async function sbFetch(path, opts={}) {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
+    ...opts, headers: { 'apikey':SUPABASE_KEY, 'Authorization':`Bearer ${SUPABASE_KEY}`, 'Content-Type':'application/json', 'Prefer':opts.prefer||'', ...opts.headers }
+  });
+  if (!res.ok) throw new Error(`${res.status}: ${await res.text()}`);
+  if (res.status===204) return null;
+  return (res.headers.get('content-type')||'').includes('json') ? res.json() : null;
 }
-
-function isLunchTime(time) { return time.startsWith('11:00') || time.startsWith('11:30'); }
-function isHotTime(time) {
-  const hot = ['1:00 PM','1:30 PM','2:00 PM','2:30 PM'];
-  return hot.includes(time);
-}
-
-const CYCLE = ['A', 'M', 'B', ''];
-const STATUS_SHORT = { A: '✓', M: '~', B: '✗' };
-
-let currentUser = null;
-let allData = {};
-let paintStatus = 'A';
-let isPainting = false;
-let activeTab = 'overview';
-let isOnline = false;
-let isAdmin = false;
-let admins = {};
-let dragPaintVal = null;
-
-// ===== SUPABASE REST =====
-async function sbFetch(path, opts = {}) {
-  const url = `${SUPABASE_URL}/rest/v1/${path}`;
-  const headers = {
-    'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`,
-    'Content-Type': 'application/json', 'Prefer': opts.prefer || ''
-  };
-  const res = await fetch(url, { ...opts, headers: { ...headers, ...opts.headers } });
-  if (!res.ok) { const t = await res.text(); throw new Error(`Supabase ${res.status}: ${t}`); }
-  if (res.status === 204) return null;
-  const ct = res.headers.get('content-type') || '';
-  return ct.includes('json') ? res.json() : null;
-}
-
 async function loadAllSchedules() {
-  try {
-    const rows = await sbFetch('schedules?select=*');
-    allData = {};
-    if (rows && Array.isArray(rows)) {
-      for (const r of rows) allData[r.name] = typeof r.data === 'string' ? JSON.parse(r.data) : r.data;
-    }
-    setOnline(true);
-  } catch (e) { console.error('Load:', e); setOnline(false); }
+  try { const rows=await sbFetch('schedules?select=*'); allData={}; (rows||[]).forEach(r=>{allData[r.name]=typeof r.data==='string'?JSON.parse(r.data):r.data;}); setOnline(true); }
+  catch(e) { console.error('Load:',e); setOnline(false); }
 }
-
 async function saveSchedule(name, data) {
-  try {
-    await sbFetch('schedules', {
-      method: 'POST', prefer: 'resolution=merge-duplicates',
-      body: JSON.stringify({ id: name.toLowerCase().replace(/[^a-z0-9]/g, '-'), name, data, updated_at: new Date().toISOString() })
-    });
-    setOnline(true);
-  } catch (e) { console.error('Save:', e); setOnline(false); }
+  try { await sbFetch('schedules',{method:'POST',prefer:'resolution=merge-duplicates',body:JSON.stringify({id:name.toLowerCase().replace(/[^a-z0-9]/g,'-'),name,data,updated_at:new Date().toISOString()})}); setOnline(true); }
+  catch(e) { console.error('Save:',e); setOnline(false); }
 }
-
 async function deleteSchedule(name) {
-  try {
-    await sbFetch(`schedules?id=eq.${encodeURIComponent(name.toLowerCase().replace(/[^a-z0-9]/g, '-'))}`, { method: 'DELETE' });
-    delete allData[name];
-  } catch (e) { console.error('Delete:', e); }
+  try { await sbFetch(`schedules?id=eq.${encodeURIComponent(name.toLowerCase().replace(/[^a-z0-9]/g,'-'))}`,{method:'DELETE'}); delete allData[name]; } catch(e) { console.error('Del:',e); }
 }
 
 // ===== ADMIN =====
 async function loadAdmins() {
-  try {
-    const rows = await sbFetch('schedules?id=eq.__admins__&select=*');
-    if (rows && rows.length > 0) {
-      admins = typeof rows[0].data === 'string' ? JSON.parse(rows[0].data) : rows[0].data;
-    } else {
-      admins = { Art: hashPw('amitofo108') };
-      await saveAdmins();
-    }
-  } catch (e) { console.error('Admin load:', e); admins = { Art: hashPw('amitofo108') }; }
+  try { const rows=await sbFetch('schedules?id=eq.__admins__&select=*'); if(rows&&rows.length>0) admins=typeof rows[0].data==='string'?JSON.parse(rows[0].data):rows[0].data; else { admins={Art:hashPw('amitofo108')}; await saveAdmins(); } }
+  catch(e) { admins={Art:hashPw('amitofo108')}; }
 }
-
 async function saveAdmins() {
-  try {
-    await sbFetch('schedules', {
-      method: 'POST', prefer: 'resolution=merge-duplicates',
-      body: JSON.stringify({ id: '__admins__', name: '__admins__', data: admins, updated_at: new Date().toISOString() })
-    });
-  } catch (e) { console.error('Admin save:', e); }
+  try { await sbFetch('schedules',{method:'POST',prefer:'resolution=merge-duplicates',body:JSON.stringify({id:'__admins__',name:'__admins__',data:admins,updated_at:new Date().toISOString()})}); } catch(e) {}
 }
-
-function hashPw(pw) {
-  let h = 0;
-  for (let i = 0; i < pw.length; i++) h = ((h << 5) - h + pw.charCodeAt(i)) | 0;
-  return 'h' + Math.abs(h).toString(36);
-}
+function hashPw(pw) { let h=0; for(let i=0;i<pw.length;i++) h=((h<<5)-h+pw.charCodeAt(i))|0; return 'h'+Math.abs(h).toString(36); }
 
 function toggleAdmin() {
-  if (isAdmin) { isAdmin = false; updateAdminUI(); return; }
-  showModal(`<h3>Admin Login</h3>
-    <p class="info-msg">Enter your admin password.</p>
+  if(isAdmin){isAdmin=false;updateAdminUI();return;}
+  showModal(`<h3>Admin Login</h3><p class="info-msg">Enter your admin password.</p>
     <input type="password" id="admin-pw" placeholder="Password..." onkeydown="if(event.key==='Enter')confirmAdmin()">
     <div id="admin-error"></div>
     <div class="modal-btns"><button onclick="closeModal()">Cancel</button><button class="primary" onclick="confirmAdmin()">Login</button></div>`);
-  setTimeout(() => { const el = document.getElementById('admin-pw'); if (el) el.focus(); }, 100);
+  setTimeout(()=>{const e=document.getElementById('admin-pw');if(e)e.focus();},100);
 }
-
 function confirmAdmin() {
-  const pw = document.getElementById('admin-pw').value;
-  if (!pw) return;
-  if (admins[currentUser] === hashPw(pw)) { isAdmin = true; closeModal(); updateAdminUI(); }
-  else document.getElementById('admin-error').innerHTML = '<p class="error-msg">Wrong password.</p>';
+  const pw=document.getElementById('admin-pw').value; if(!pw) return;
+  if(admins[currentUser]===hashPw(pw)){isAdmin=true;closeModal();updateAdminUI();}
+  else document.getElementById('admin-error').innerHTML='<p class="error-msg">Wrong password.</p>';
 }
-
 function updateAdminUI() {
-  const btn = document.getElementById('admin-toggle-btn');
-  if (btn) btn.className = isAdmin ? 'btn-small admin-active' : 'btn-small';
-  renderAdminBar();
+  const b=document.getElementById('admin-toggle-btn'); if(b) b.className=isAdmin?'btn-small admin-active':'btn-small';
+  renderAdminBar(); buildTabs();
 }
-
 function renderAdminBar() {
-  const c = document.getElementById('admin-bar-container');
-  if (!isAdmin) { c.innerHTML = ''; return; }
-  const names = Object.keys(allData).filter(n => n !== '__admins__');
-  let html = '<div class="admin-bar"><span>Admin:</span>';
-  names.forEach(n => { html += `<button class="del-btn danger" onclick="adminDeleteUser('${esc(n)}')">Delete ${esc(n)}</button>`; });
-  html += `<button class="del-btn" onclick="showPromoteAdmin()">+ Make Admin</button>`;
-  html += `<button class="del-btn" onclick="showChangePassword()">Change Password</button></div>`;
-  c.innerHTML = html;
+  const c=document.getElementById('admin-bar-container');
+  if(!isAdmin){c.innerHTML='';return;}
+  let html='<div class="admin-bar"><span>Admin mode</span>';
+  html+=`<button class="del-btn" onclick="showPromoteAdmin()">+ Make Admin</button>`;
+  html+=`<button class="del-btn" onclick="showChangePassword()">Change Password</button></div>`;
+  c.innerHTML=html;
 }
 
-function adminDeleteUser(name) {
-  if (!isAdmin || !confirm(`Delete ${name} and all their data?`)) return;
+function showDeleteModal() {
+  const names=Object.keys(allData).filter(n=>n!=='__admins__');
+  showModal(`<h3>Delete a User</h3><p class="info-msg">This permanently removes their schedule data.</p>
+    <div class="del-list">${names.map(n=>`<button onclick="confirmDeleteUser('${esc(n)}')">${esc(n)}</button>`).join('')}</div>
+    <div class="modal-btns"><button onclick="closeModal()">Cancel</button></div>`);
+}
+function confirmDeleteUser(name) {
+  if(!confirm(`Delete ${name} and all their data?`)) return;
   deleteSchedule(name);
-  if (admins[name]) { delete admins[name]; saveAdmins(); }
-  buildTabs(); switchTab('overview'); renderAdminBar();
+  if(admins[name]){delete admins[name];saveAdmins();}
+  closeModal(); buildTabs(); switchTab('overview');
 }
 
 function showPromoteAdmin() {
-  const names = Object.keys(allData).filter(n => n !== '__admins__' && !admins[n]);
-  if (!names.length) { alert('All users are already admins.'); return; }
-  showModal(`<h3>Make Someone Admin</h3>
-    <p class="info-msg">Pick a user and set their admin password.</p>
-    <select id="promote-select">${names.map(n => `<option value="${esc(n)}">${esc(n)}</option>`).join('')}</select>
+  const names=Object.keys(allData).filter(n=>n!=='__admins__'&&!admins[n]);
+  if(!names.length){alert('All users are already admins.');return;}
+  showModal(`<h3>Make Someone Admin</h3><p class="info-msg">Pick a user and set their admin password.</p>
+    <select id="promote-select">${names.map(n=>`<option value="${esc(n)}">${esc(n)}</option>`).join('')}</select>
     <input type="password" id="promote-pw" placeholder="Set their password...">
     <div id="promote-error"></div>
     <div class="modal-btns"><button onclick="closeModal()">Cancel</button><button class="primary" onclick="confirmPromote()">Make Admin</button></div>`);
 }
-
 function confirmPromote() {
-  const name = document.getElementById('promote-select').value;
-  const pw = document.getElementById('promote-pw').value;
-  if (!pw || pw.length < 3) { document.getElementById('promote-error').innerHTML = '<p class="error-msg">Min 3 characters.</p>'; return; }
-  admins[name] = hashPw(pw); saveAdmins(); closeModal(); renderAdminBar(); alert(`${name} is now an admin.`);
+  const name=document.getElementById('promote-select').value,pw=document.getElementById('promote-pw').value;
+  if(!pw||pw.length<3){document.getElementById('promote-error').innerHTML='<p class="error-msg">Min 3 characters.</p>';return;}
+  admins[name]=hashPw(pw);saveAdmins();closeModal();renderAdminBar();alert(`${name} is now an admin.`);
 }
-
 function showChangePassword() {
   showModal(`<h3>Change Your Admin Password</h3>
     <input type="password" id="new-pw" placeholder="New password..." onkeydown="if(event.key==='Enter')document.getElementById('new-pw2').focus()">
     <input type="password" id="new-pw2" placeholder="Confirm..." onkeydown="if(event.key==='Enter')confirmChangePw()">
     <div id="pw-error"></div>
     <div class="modal-btns"><button onclick="closeModal()">Cancel</button><button class="primary" onclick="confirmChangePw()">Change</button></div>`);
-  setTimeout(() => { const el = document.getElementById('new-pw'); if (el) el.focus(); }, 100);
+  setTimeout(()=>{const e=document.getElementById('new-pw');if(e)e.focus();},100);
 }
-
 function confirmChangePw() {
-  const p1 = document.getElementById('new-pw').value, p2 = document.getElementById('new-pw2').value;
-  if (!p1 || p1.length < 3) { document.getElementById('pw-error').innerHTML = '<p class="error-msg">Min 3 characters.</p>'; return; }
-  if (p1 !== p2) { document.getElementById('pw-error').innerHTML = '<p class="error-msg">Passwords don\'t match.</p>'; return; }
-  admins[currentUser] = hashPw(p1); saveAdmins(); closeModal(); alert('Password changed.');
+  const p1=document.getElementById('new-pw').value,p2=document.getElementById('new-pw2').value;
+  if(!p1||p1.length<3){document.getElementById('pw-error').innerHTML='<p class="error-msg">Min 3 characters.</p>';return;}
+  if(p1!==p2){document.getElementById('pw-error').innerHTML='<p class="error-msg">Passwords don\'t match.</p>';return;}
+  admins[currentUser]=hashPw(p1);saveAdmins();closeModal();alert('Password changed.');
 }
 
-// ===== MODAL =====
-function showModal(html) { document.getElementById('modal-container').innerHTML = `<div class="modal-bg" onclick="if(event.target===this)closeModal()"><div class="modal">${html}</div></div>`; }
-function closeModal() { document.getElementById('modal-container').innerHTML = ''; }
+function showModal(h){document.getElementById('modal-container').innerHTML=`<div class="modal-bg" onclick="if(event.target===this)closeModal()"><div class="modal">${h}</div></div>`;}
+function closeModal(){document.getElementById('modal-container').innerHTML='';}
 
-// ===== STATUS =====
-function setOnline(online) {
-  isOnline = online;
-  const dot = document.getElementById('status-dot');
-  const txt = document.getElementById('status-text');
-  if (dot) dot.className = 'status-dot ' + (online ? 'live' : 'offline');
-  if (txt) txt.textContent = online ? 'Live' : 'Offline';
-}
+function setOnline(o){isOnline=o;const d=document.getElementById('status-dot'),t=document.getElementById('status-text');if(d)d.className='status-dot '+(o?'live':'offline');if(t)t.textContent=o?'Live':'Offline';}
 
-// ===== POLLING =====
-let pollTimer = null;
-function startPolling() {
-  if (pollTimer) clearInterval(pollTimer);
-  pollTimer = setInterval(async () => {
-    await loadAllSchedules();
-    if (activeTab === 'overview') renderOverview();
-  }, 5000);
-}
+let pollTimer=null;
+function startPolling(){if(pollTimer)clearInterval(pollTimer);pollTimer=setInterval(async()=>{await loadAllSchedules();if(activeTab==='overview')renderOverview();},5000);}
 
 // ===== LOGIN =====
-async function initLogin() {
-  await loadAllSchedules();
-  await loadAdmins();
-  const names = Object.keys(allData).filter(n => n !== '__admins__');
-  const container = document.getElementById('existing-users');
-  if (names.length > 0) {
-    container.innerHTML = '<p>Or pick an existing name:</p>' +
-      names.map(n => `<span class="user-chip" onclick="pickUser('${esc(n)}')">${esc(n)}</span>`).join('');
-  }
-  const saved = localStorage.getItem('scheduler-user');
-  if (saved && allData[saved]) enterApp(saved);
+async function initLogin(){
+  await loadAllSchedules(); await loadAdmins();
+  const names=Object.keys(allData).filter(n=>n!=='__admins__');
+  const c=document.getElementById('existing-users');
+  if(names.length>0) c.innerHTML='<p>Or pick an existing name:</p>'+names.map(n=>`<span class="user-chip" onclick="pickUser('${esc(n)}')">${esc(n)}</span>`).join('');
+  const saved=localStorage.getItem('scheduler-user');
+  if(saved&&allData[saved])enterApp(saved);
 }
-
-function pickUser(name) { document.getElementById('name-input').value = name; joinAs(); }
-
-function joinAs() {
-  const input = document.getElementById('name-input');
-  const name = input.value.trim();
-  if (!name) { input.focus(); return; }
-  // Check for existing user (case-insensitive match)
-  const existing = Object.keys(allData).find(n => n.toLowerCase() === name.toLowerCase() && n !== '__admins__');
-  if (existing && existing !== name) {
-    // Name exists with different casing — use the existing one
-    enterApp(existing);
-    return;
-  }
-  if (!allData[name]) allData[name] = {};
+function pickUser(n){document.getElementById('name-input').value=n;joinAs();}
+function joinAs(){
+  const input=document.getElementById('name-input'),name=input.value.trim();
+  if(!name){input.focus();return;}
+  const existing=Object.keys(allData).find(n=>n.toLowerCase()===name.toLowerCase()&&n!=='__admins__');
+  if(existing&&existing!==name){enterApp(existing);return;}
+  if(!allData[name])allData[name]={};
   enterApp(name);
 }
-
-function enterApp(name) {
-  currentUser = name;
-  localStorage.setItem('scheduler-user', name);
-  document.getElementById('login-screen').style.display = 'none';
-  document.getElementById('app-screen').style.display = 'block';
-  isAdmin = false; updateAdminUI(); buildTabs(); switchTab(name); startPolling();
+function enterApp(name){
+  currentUser=name;localStorage.setItem('scheduler-user',name);
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('app-screen').style.display='block';
+  isAdmin=false;updateAdminUI();buildTabs();switchTab(name);startPolling();
 }
-
-function logout() {
-  localStorage.removeItem('scheduler-user');
-  currentUser = null; isAdmin = false;
-  if (pollTimer) clearInterval(pollTimer);
-  document.getElementById('login-screen').style.display = 'flex';
-  document.getElementById('app-screen').style.display = 'none';
-  document.getElementById('admin-bar-container').innerHTML = '';
+function logout(){
+  localStorage.removeItem('scheduler-user');currentUser=null;isAdmin=false;
+  if(pollTimer)clearInterval(pollTimer);
+  document.getElementById('login-screen').style.display='flex';
+  document.getElementById('app-screen').style.display='none';
+  document.getElementById('admin-bar-container').innerHTML='';
   initLogin();
 }
 
 // ===== TABS =====
-function buildTabs() {
-  const tabs = document.getElementById('tabs');
-  const names = Object.keys(allData).filter(n => n !== '__admins__');
-  let html = `<button class="tab" data-tab="overview" onclick="switchTab('overview')">Overview</button>`;
-  if (currentUser && names.includes(currentUser)) {
-    html += `<button class="tab you-tab" data-tab="${esc(currentUser)}" onclick="switchTab('${esc(currentUser)}')">${esc(currentUser)} ★</button>`;
-  }
-  names.filter(n => n !== currentUser).sort().forEach(name => {
-    html += `<button class="tab" data-tab="${esc(name)}" onclick="switchTab('${esc(name)}')">${esc(name)}</button>`;
+function buildTabs(){
+  const tabs=document.getElementById('tabs');
+  const names=Object.keys(allData).filter(n=>n!=='__admins__');
+  let html=`<button class="tab" data-tab="overview" onclick="switchTab('overview')">Overview</button>`;
+  if(currentUser&&names.includes(currentUser))
+    html+=`<button class="tab you-tab" data-tab="${esc(currentUser)}" onclick="switchTab('${esc(currentUser)}')">${esc(currentUser)} ★</button>`;
+  names.filter(n=>n!==currentUser).sort().forEach(n=>{
+    html+=`<button class="tab" data-tab="${esc(n)}" onclick="switchTab('${esc(n)}')">${esc(n)}</button>`;
   });
-  html += `<button class="tab" data-tab="add" onclick="switchTab('add')">+ Add</button>`;
-  tabs.innerHTML = html;
+  html+=`<button class="tab" data-tab="add" onclick="switchTab('add')">+ Add</button>`;
+  if(isAdmin) html+=`<button class="tab delete-tab" onclick="showDeleteModal()">− Delete</button>`;
+  html+=`</div>`;
+  tabs.innerHTML=html;
 }
 
-function switchTab(tab) {
-  activeTab = tab;
-  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
-  const toolbar = document.getElementById('paint-toolbar-container');
-  const grid = document.getElementById('grid-container');
-
-  if (tab === 'overview') {
-    toolbar.innerHTML = '';
-    renderOverview();
-  } else if (tab === 'add') {
-    toolbar.innerHTML = '';
-    grid.innerHTML = `<div class="add-panel"><h3 style="margin-bottom:16px;">Add Team Member</h3>
+function switchTab(tab){
+  activeTab=tab;
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.tab===tab));
+  const toolbar=document.getElementById('paint-toolbar-container'),grid=document.getElementById('grid-container');
+  if(tab==='overview'){toolbar.innerHTML='';renderOverview();}
+  else if(tab==='add'){
+    toolbar.innerHTML='';
+    grid.innerHTML=`<div class="add-panel"><h3 style="margin-bottom:16px;">Add Team Member</h3>
       <input type="text" id="new-member-name" placeholder="Name..." onkeydown="if(event.key==='Enter')addMember()">
       <button onclick="addMember()">Add</button></div>`;
   } else {
-    const isMe = tab === currentUser;
-    const canEdit = isMe || (currentUser === 'Art' && isAdmin);
-    if (canEdit) {
-      const editingOther = !isMe ? ` <span style="color:var(--orange);font-size:0.8em;">(editing as admin)</span>` : '';
-      toolbar.innerHTML = `<div class="paint-toolbar">
-        <span class="paint-label">Status:${editingOther}</span>
+    const isMe=tab===currentUser;
+    const canEdit=isMe||(currentUser==='Art'&&isAdmin);
+    if(canEdit){
+      const note=!isMe?' <span style="color:var(--orange);font-size:0.8em;">(editing as admin)</span>':'';
+      toolbar.innerHTML=`<div class="paint-toolbar"><span class="paint-label">Status:${note}</span>
         <button class="paint-btn ${paintStatus==='cycle'?'active':''}" data-status="cycle" onclick="setPaint('cycle',this)">⟳ Cycle</button>
         <button class="paint-btn ${paintStatus==='A'?'active':''}" data-status="A" onclick="setPaint('A',this)">✓ Available</button>
         <button class="paint-btn ${paintStatus==='M'?'active':''}" data-status="M" onclick="setPaint('M',this)">~ Maybe</button>
         <button class="paint-btn ${paintStatus==='B'?'active':''}" data-status="B" onclick="setPaint('B',this)">✗ Busy</button>
-        <button class="paint-btn ${paintStatus==='clear'?'active':''}" data-status="clear" onclick="setPaint('clear',this)">Eraser</button>
-      </div>`;
+        <button class="paint-btn ${paintStatus==='clear'?'active':''}" data-status="clear" onclick="setPaint('clear',this)">Eraser</button></div>`;
     } else {
-      toolbar.innerHTML = `<div class="paint-toolbar"><span class="paint-label" style="font-style:italic;">Viewing ${esc(tab)}'s schedule (read-only)</span></div>`;
+      toolbar.innerHTML=`<div class="paint-toolbar"><span class="paint-label" style="font-style:italic;">Viewing ${esc(tab)}'s schedule (read-only)</span></div>`;
     }
-    renderEditGrid(tab, canEdit);
+    renderEditGrid(tab,canEdit);
   }
 }
 
 // ===== PAINT =====
-function setPaint(status, btn) {
-  paintStatus = status;
-  document.querySelectorAll('.paint-btn').forEach(b => b.classList.remove('active'));
-  if (btn) btn.classList.add('active');
+function setPaint(s,btn){paintStatus=s;document.querySelectorAll('.paint-btn').forEach(b=>b.classList.remove('active'));if(btn)btn.classList.add('active');}
+
+let lastPaintedKey=null;
+function getEditTarget(){if(currentUser==='Art'&&isAdmin&&activeTab!=='overview'&&activeTab!=='add')return activeTab;return currentUser;}
+function canEditGrid(){if(!currentUser)return false;if(activeTab===currentUser)return true;if(currentUser==='Art'&&isAdmin)return true;return false;}
+
+function startPaint(day,time){
+  if(!canEditGrid())return;
+  isPainting=true;
+  const target=getEditTarget(),data=allData[target]||{},key=`${day}|${time}`,cur=data[key]||'';
+  lastPaintedKey=key;
+  if(paintStatus==='cycle'){const i=CYCLE.indexOf(cur);dragPaintVal=CYCLE[(i+1)%CYCLE.length];}
+  else if(paintStatus==='clear') dragPaintVal='';
+  else dragPaintVal=paintStatus;
+  if(dragPaintVal)data[key]=dragPaintVal;else delete data[key];
+  allData[target]=data;updateCell(key,data[key]);
 }
-
-let lastPaintedKey = null;
-
-function getEditTarget() {
-  // Art as admin can edit anyone's tab
-  if (currentUser === 'Art' && isAdmin && activeTab !== 'overview' && activeTab !== 'add') return activeTab;
-  return currentUser;
-}
-
-function canEdit() {
-  if (!currentUser) return false;
-  if (activeTab === currentUser) return true;
-  if (currentUser === 'Art' && isAdmin) return true;
-  return false;
-}
-
-function startPaint(day, time) {
-  if (!canEdit()) return;
-  isPainting = true;
-  const target = getEditTarget();
-  const data = allData[target] || {};
-  const key = `${day}|${time}`;
-  const current = data[key] || '';
-  lastPaintedKey = key;
-
-  if (paintStatus === 'cycle') {
-    const idx = CYCLE.indexOf(current);
-    dragPaintVal = CYCLE[(idx + 1) % CYCLE.length];
-  } else if (paintStatus === 'clear') {
-    dragPaintVal = '';
-  } else {
-    dragPaintVal = paintStatus;
-  }
-
-  if (dragPaintVal) data[key] = dragPaintVal;
-  else delete data[key];
-  allData[target] = data;
-  updateCell(key, data[key]);
-}
-
-function continuePaint(day, time) {
-  if (!isPainting || !canEdit()) return;
-  const key = `${day}|${time}`;
-  if (key === lastPaintedKey) return;
-  lastPaintedKey = key;
-  const target = getEditTarget();
-  const data = allData[target] || {};
-
+function continuePaint(day,time){
+  if(!isPainting||!canEditGrid())return;
+  const key=`${day}|${time}`;if(key===lastPaintedKey)return;lastPaintedKey=key;
+  const target=getEditTarget(),data=allData[target]||{};
   let val;
-  if (paintStatus === 'cycle') {
-    val = dragPaintVal;
-  } else if (paintStatus === 'clear') {
-    val = '';
-  } else {
-    val = paintStatus;
-  }
-
-  if (val) data[key] = val;
-  else delete data[key];
-  allData[target] = data;
-  updateCell(key, data[key]);
+  if(paintStatus==='cycle')val=dragPaintVal;else if(paintStatus==='clear')val='';else val=paintStatus;
+  if(val)data[key]=val;else delete data[key];
+  allData[target]=data;updateCell(key,data[key]);
 }
+function updateCell(key,val){const c=document.querySelector(`td[data-key="${CSS.escape(key)}"]`);if(c){c.setAttribute('data-val',val||'');c.textContent=STATUS_SHORT[val]||'';}}
 
-function updateCell(key, val) {
-  const cell = document.querySelector(`td[data-key="${CSS.escape(key)}"]`);
-  if (cell) { cell.setAttribute('data-val', val || ''); cell.textContent = STATUS_SHORT[val] || ''; }
-}
-
-let saveTimeout = null;
-function debounceSave() {
-  if (saveTimeout) clearTimeout(saveTimeout);
-  const target = getEditTarget();
-  saveTimeout = setTimeout(() => { if (target && allData[target]) saveSchedule(target, allData[target]); }, 500);
-}
-
-document.addEventListener('mouseup', () => { if (isPainting) { isPainting = false; dragPaintVal = null; lastPaintedKey = null; debounceSave(); } });
-document.addEventListener('touchend', () => { if (isPainting) { isPainting = false; dragPaintVal = null; lastPaintedKey = null; debounceSave(); } });
-
-function handleTouchMove(e) {
-  if (!isPainting) return;
-  e.preventDefault();
-  const touch = e.touches[0];
-  const el = document.elementFromPoint(touch.clientX, touch.clientY);
-  if (el && el.classList.contains('cell') && el.dataset.key) {
-    const i = el.dataset.key.lastIndexOf('|');
-    continuePaint(el.dataset.key.substring(0, i), el.dataset.key.substring(i + 1));
-  }
-}
+let saveTimeout=null;
+function debounceSave(){if(saveTimeout)clearTimeout(saveTimeout);const t=getEditTarget();saveTimeout=setTimeout(()=>{if(t&&allData[t])saveSchedule(t,allData[t]);},500);}
+document.addEventListener('mouseup',()=>{if(isPainting){isPainting=false;dragPaintVal=null;lastPaintedKey=null;debounceSave();}});
+document.addEventListener('touchend',()=>{if(isPainting){isPainting=false;dragPaintVal=null;lastPaintedKey=null;debounceSave();}});
+function handleTouchMove(e){if(!isPainting)return;e.preventDefault();const t=e.touches[0],el=document.elementFromPoint(t.clientX,t.clientY);if(el&&el.classList.contains('cell')&&el.dataset.key){const i=el.dataset.key.lastIndexOf('|');continuePaint(el.dataset.key.substring(0,i),el.dataset.key.substring(i+1));}}
 
 // ===== EDIT GRID =====
-function renderEditGrid(name, editable) {
-  const data = allData[name] || {};
-  let html = '<table><thead><tr><th class="time-col">Time</th>';
-  for (const day of DAYS) html += `<th>${day}</th>`;
-  html += '</tr></thead><tbody>';
-  for (const time of TIMES) {
-    const lunch = isLunchTime(time);
-    html += `<tr><td class="time-col${lunch ? ' lunch-hour' : ''}">${time}</td>`;
-    for (const day of DAYS) {
-      const key = `${day}|${time}`;
-      const val = data[key] || '';
-      html += `<td class="cell${lunch ? ' lunch-hour' : ''}" data-key="${key}" data-val="${val}"
-        ${editable ? `onmousedown="startPaint('${esc(day)}','${time}')" onmouseenter="continuePaint('${esc(day)}','${time}')" ontouchstart="startPaint('${esc(day)}','${time}')" ontouchmove="handleTouchMove(event)"` : ''}>${STATUS_SHORT[val] || ''}</td>`;
+function renderEditGrid(name,editable){
+  const data=allData[name]||{};
+  let html='<table><thead><tr><th class="time-col">Time</th>';
+  for(const day of DAYS) html+=`<th>${day}</th>`;
+  html+='</tr></thead><tbody>';
+  for(const time of TIMES){
+    const lunch=isLunchTime(time);
+    html+=`<tr><td class="time-col${lunch?' lunch-hour':''}">${time}</td>`;
+    for(const day of DAYS){
+      const key=`${day}|${time}`,val=data[key]||'';
+      html+=`<td class="cell${lunch?' lunch-hour':''}" data-key="${key}" data-val="${val}"${editable?` onmousedown="startPaint('${esc(day)}','${time}')" onmouseenter="continuePaint('${esc(day)}','${time}')" ontouchstart="startPaint('${esc(day)}','${time}')" ontouchmove="handleTouchMove(event)"`:''} >${STATUS_SHORT[val]||''}</td>`;
     }
-    html += '</tr>';
+    html+='</tr>';
   }
-  html += '</tbody></table>';
-  document.getElementById('grid-container').innerHTML = html;
+  html+='</tbody></table>';
+  document.getElementById('grid-container').innerHTML=html;
+}
+
+// ===== MATCH LEVEL SYSTEM =====
+// Lvl 1 (best):  2+ Available — strong green
+// Lvl 2:         1 Available + 1+ Maybe — yellow-green
+// Lvl 3:         2+ Maybe — yellow
+// Lvl 4:         1 Available + 0 Maybe (solo avail, still notable) — orange
+// Lvl 5:         1 Maybe only (barely notable) — muted
+function getMatchLevel(avail, maybe) {
+  if (avail >= 2) return 1;
+  if (avail === 1 && maybe >= 1) return 2;
+  if (maybe >= 2) return 3;
+  if (avail === 1) return 4;
+  if (maybe >= 1) return 5;
+  return 0;
 }
 
 // ===== OVERVIEW =====
-function renderOverview() {
-  const names = Object.keys(allData).filter(n => n !== '__admins__');
-  let html = '<table><thead><tr><th class="time-col">Time</th>';
-  for (const day of DAYS) html += `<th>${day}</th>`;
-  html += '</tr></thead><tbody>';
+function renderOverview(){
+  const names=Object.keys(allData).filter(n=>n!=='__admins__');
+  let html='<table><thead><tr><th class="time-col">Time</th>';
+  for(const day of DAYS) html+=`<th>${day}</th>`;
+  html+='</tr></thead><tbody>';
 
-  // Track per-day, per-time data for summary
-  const dayData = {};
-  for (const day of DAYS) dayData[day] = {};
+  const dayData={};
+  for(const day of DAYS) dayData[day]={};
 
-  for (const time of TIMES) {
-    const lunch = isLunchTime(time);
-    html += `<tr><td class="time-col${lunch ? ' lunch-hour' : ''}">${time}</td>`;
-    for (const day of DAYS) {
-      const key = `${day}|${time}`;
-      let availCount = 0;
-      let tags = '';
-      const availPeople = [];
-      for (const name of names) {
-        const val = (allData[name] || {})[key];
-        if (!val || val === 'B') continue;
-        if (val === 'A') { availCount++; availPeople.push(name); }
-        const cls = val === 'A' ? 'avail' : 'maybe';
-        const short = name.length > 6 ? name.substring(0, 5) + '…' : name;
-        tags += `<span class="ov-tag ${cls}">${short}</span>`;
+  for(const time of TIMES){
+    const lunch=isLunchTime(time);
+    html+=`<tr><td class="time-col${lunch?' lunch-hour':''}">${time}</td>`;
+    for(const day of DAYS){
+      const key=`${day}|${time}`;
+      let ac=0,mc=0,tags='';
+      const ap=[],mp=[];
+      for(const name of names){
+        const val=(allData[name]||{})[key];
+        if(!val||val==='B')continue;
+        if(val==='A'){ac++;ap.push(name);}
+        if(val==='M'){mc++;mp.push(name);}
+        const cls=val==='A'?'avail':'maybe';
+        const short=name.length>6?name.substring(0,5)+'…':name;
+        tags+=`<span class="ov-tag ${cls}">${short}</span>`;
       }
-      const highlight = availCount >= 2 ? ' highlight-good' : '';
-      html += `<td class="overview-cell${lunch ? ' lunch-hour' : ''}${highlight}"><div class="ov-tags">${tags}</div></td>`;
-      dayData[day][time] = { count: availCount, people: availPeople };
+      const lvl=getMatchLevel(ac,mc);
+      const lvlAttr=lvl>0?` data-lvl="${lvl}"`:'';
+      html+=`<td class="overview-cell${lunch?' lunch-hour':''}"${lvlAttr}><div class="ov-tags">${tags}</div></td>`;
+      dayData[day][time]={ac,mc,ap,mp};
     }
-    html += '</tr>';
+    html+='</tr>';
   }
 
-  // Summary rows at bottom of table
-  html += '<tr class="summary-spacer"><td colspan="' + (DAYS.length + 1) + '"></td></tr>';
-  html += '<tr class="summary-header"><td class="time-col" style="background:var(--surface2);">Best Times</td>';
-  for (const day of DAYS) html += '<td style="background:var(--surface2);">' + day.split(' ')[0] + '</td>';
-  html += '</tr>';
+  // Summary rows
+  html+=`<tr class="summary-spacer"><td colspan="${DAYS.length+1}"></td></tr>`;
+  html+=`<tr class="summary-header"><td class="time-col" style="background:var(--surface2);">Best Times</td>`;
+  for(const day of DAYS) html+=`<td style="background:var(--surface2);">${day.split(' ')[0]}</td>`;
+  html+='</tr><tr><td class="time-col" style="background:var(--surface);"></td>';
 
-  // Build summary per day
-  html += '<tr><td class="time-col" style="background:var(--surface);"></td>';
-  for (const day of DAYS) {
-    const bestSlots = buildDaySummary(dayData[day]);
-    if (bestSlots.length === 0) {
-      html += '<td class="summary-cell" style="color:var(--text-dim);font-style:italic;">—</td>';
-    } else {
-      html += '<td class="summary-cell">';
-      for (const slot of bestSlots) {
-        const hotClass = slot.hasHot ? ' hot-warning' : '';
-        html += `<span class="best-slot${hotClass}"><span class="time-range">${slot.range}</span> <span class="people-list">${slot.count}× ${slot.people}</span></span>`;
-      }
-      html += '</td>';
+  for(const day of DAYS){
+    const slots=buildDaySummary(dayData[day]);
+    if(!slots.length){ html+='<td class="summary-cell" style="color:var(--text-dim);font-style:italic;">—</td>'; continue; }
+    html+='<td class="summary-cell">';
+    for(const s of slots){
+      const lc=s.lvl<=1?'l1':s.lvl===2?'l2':s.lvl===3?'l3':'l4';
+      html+=`<span class="best-slot"><span class="sr ${lc}">${s.range}</span> <span class="sp">${s.who}</span>${s.hasHot?' <span class="hot-tag">(heat)</span>':''}</span>`;
     }
+    html+='</td>';
   }
-  html += '</tr>';
-
-  html += '</tbody></table>';
-  document.getElementById('grid-container').innerHTML = html;
+  html+='</tr></tbody></table>';
+  document.getElementById('grid-container').innerHTML=html;
 }
 
-function buildDaySummary(timeData) {
-  // Find contiguous chunks where 2+ people are available
-  const chunks = [];
-  let current = null;
-
-  for (let i = 0; i < TIMES.length; i++) {
-    const time = TIMES[i];
-    const d = timeData[time] || { count: 0, people: [] };
-    if (d.count >= 2) {
-      if (!current) {
-        current = { startIdx: i, times: [time], counts: [d.count], allPeople: new Set(d.people) };
-      } else {
-        current.times.push(time);
-        current.counts.push(d.count);
-        d.people.forEach(p => current.allPeople.add(p));
-      }
+function buildDaySummary(td){
+  const chunks=[];let cur=null;
+  for(let i=0;i<TIMES.length;i++){
+    const t=TIMES[i],d=td[t]||{ac:0,mc:0,ap:[],mp:[]};
+    const lvl=getMatchLevel(d.ac,d.mc);
+    if(lvl>0&&lvl<=3){ // Only summarize lvl 1-3 matches
+      if(!cur) cur={si:i,times:[t],lvls:[lvl],people:new Set([...d.ap,...d.mp])};
+      else { cur.times.push(t);cur.lvls.push(lvl);d.ap.forEach(p=>cur.people.add(p));d.mp.forEach(p=>cur.people.add(p)); }
     } else {
-      if (current) { chunks.push(finalizeChunk(current)); current = null; }
+      if(cur){chunks.push(finChunk(cur));cur=null;}
     }
   }
-  if (current) chunks.push(finalizeChunk(current));
-
-  // Sort by avg count descending
-  chunks.sort((a, b) => b.avgCount - a.avgCount);
+  if(cur)chunks.push(finChunk(cur));
+  chunks.sort((a,b)=>a.lvl-b.lvl||b.times-a.times);
   return chunks;
 }
 
-function finalizeChunk(c) {
-  const startTime = c.times[0];
-  // End time: 30 min after last slot
-  const lastIdx = c.startIdx + c.times.length - 1;
-  const endTime = lastIdx + 1 < TIMES.length ? TIMES[lastIdx + 1] : '6:00 PM';
-  const avgCount = c.counts.reduce((a, b) => a + b, 0) / c.counts.length;
-  const hasHot = c.times.some(t => isHotTime(t));
-  const people = [...c.allPeople].sort().join(', ');
-  return { range: `${startTime}–${endTime}`, count: Math.round(avgCount), people, hasHot, avgCount };
+function finChunk(c){
+  const endIdx=c.si+c.times.length-1;
+  const end=endIdx+1<TIMES.length?TIMES[endIdx+1]:'6:00 PM';
+  const bestLvl=Math.min(...c.lvls);
+  const hasHot=c.times.some(t=>isHotTime(t));
+  const who=[...c.people].sort().join(', ');
+  return {range:`${c.times[0]}–${end}`,lvl:bestLvl,hasHot,who,times:c.times.length};
 }
 
 // ===== ADD MEMBER =====
-function addMember() {
-  const input = document.getElementById('new-member-name');
-  const name = input.value.trim();
-  if (!name) { input.focus(); return; }
-  const existing = Object.keys(allData).find(n => n.toLowerCase() === name.toLowerCase() && n !== '__admins__');
-  if (existing) { alert(existing + ' already exists'); return; }
-  allData[name] = {};
-  saveSchedule(name, {});
-  buildTabs(); switchTab(name);
+function addMember(){
+  const input=document.getElementById('new-member-name'),name=input.value.trim();
+  if(!name){input.focus();return;}
+  const existing=Object.keys(allData).find(n=>n.toLowerCase()===name.toLowerCase()&&n!=='__admins__');
+  if(existing){alert(existing+' already exists');return;}
+  allData[name]={};saveSchedule(name,{});buildTabs();switchTab(name);
 }
 
-// ===== HELPERS =====
-function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
 
-// ===== INIT =====
 initLogin();
 </script>
 </body>
