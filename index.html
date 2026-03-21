@@ -71,7 +71,7 @@
   header {
     display: flex; align-items: center; justify-content: space-between;
     padding: 10px 16px; background: var(--surface); border-bottom: 1px solid var(--border);
-    position: sticky; top: 0; z-index: 100; flex-wrap: wrap; gap: 6px;
+    position: sticky; top: 0; z-index: 100; flex-wrap: wrap; gap: 4px 8px;
   }
   header h2 { font-size: 1.1em; white-space: nowrap; }
   #header-controls {
@@ -160,7 +160,7 @@
 
   td.cell {
     padding: 6px 2px; cursor: pointer; min-width: 72px; height: 32px; transition: background 0.1s;
-    touch-action: none; background: var(--surface);
+    background: var(--surface);
   }
   td.cell:hover { filter: brightness(0.96); }
   td.cell[data-val="A"] { background: var(--green-bg); color: var(--green-text); font-weight: 600; }
@@ -261,12 +261,24 @@
   }
 
   @media (max-width: 600px) {
-    #header-controls .paint-btn { padding: 3px 7px; font-size: 0.72em; }
+    header { flex-wrap: nowrap; padding: 8px 10px; }
+    header h2 { font-size: 0.9em; }
+    .header-right { gap: 4px; font-size: 0.78em; }
+    .header-right .btn-small { padding: 3px 8px; font-size: 0.78em; }
+    #header-controls {
+      order: 10; flex-basis: 100%; padding: 6px 0 2px;
+      justify-content: flex-start; gap: 3px;
+      border-top: 1px solid var(--border); margin-top: 4px;
+    }
+    #header-controls:empty { display: none; }
+    #header-controls .paint-btn { padding: 4px 8px; font-size: 0.72em; }
+    #header-controls .paint-label { font-size: 0.7em; }
+    #header-controls .info-icon { width: 12px; height: 12px; font-size: 0.55em; }
+    .ov-edit-toggle { font-size: 0.68em; padding: 3px 8px; }
     th, td { font-size: 0.7em; }
-    td.cell { min-width: 56px; height: 28px; }
-    header h2 { font-size: 0.95em; }
-    .header-right { gap: 4px; }
-    #header-controls { padding: 0 2px; }
+    td.cell { min-width: 56px; height: 34px; }
+    .tabs { padding: 0 4px; }
+    .tab { padding: 8px 10px; font-size: 0.82em; }
   }
 </style>
 </head>
@@ -285,7 +297,7 @@
     <h2>Team Scheduler</h2>
     <div id="header-controls"></div>
     <div class="header-right">
-      <span style="font-size:0.7em;color:var(--text-dim);opacity:0.5;">v2.1</span>
+      <span style="font-size:0.7em;color:var(--text-dim);opacity:0.5;">v2.2</span>
       <span><span class="status-dot" id="status-dot"></span><span id="status-text">Connecting...</span></span>
       <button class="btn-small" id="admin-toggle-btn" onclick="toggleAdmin()">Admin</button>
       <button class="btn-small" onclick="logout()">Switch User</button>
@@ -511,11 +523,17 @@ function switchTab(tab){
 function setPaint(s,btn){paintStatus=s;document.querySelectorAll('.paint-btn').forEach(b=>b.classList.remove('active'));if(btn)btn.classList.add('active');}
 
 let lastPaintedKey=null;
+let touchStartPos=null;
+let touchDidPaint=false;
+const TOUCH_THRESHOLD=8; // px movement before it's considered a scroll
+
 function getEditTarget(){if(currentUser==='Art'&&isAdmin&&activeTab!=='overview'&&activeTab!=='add')return activeTab;return currentUser;}
 function canEditGrid(){if(!currentUser)return false;if(activeTab===currentUser)return true;if(currentUser==='Art'&&isAdmin)return true;return false;}
 
-function startPaint(day,time){
+function startPaint(day,time,e){
   if(!canEditGrid())return;
+  // Prevent mouse events from firing after touch
+  if(e&&e.type==='mousedown'&&touchDidPaint){touchDidPaint=false;return;}
   isPainting=true;
   const target=getEditTarget(),data=allData[target]||{},key=`${day}|${time}`,cur=data[key]||'';
   lastPaintedKey=key;
@@ -536,10 +554,57 @@ function continuePaint(day,time){
 }
 function updateCell(key,val){const c=document.querySelector(`td[data-key="${CSS.escape(key)}"]`);if(c){c.setAttribute('data-val',val||'');c.textContent=STATUS_SHORT[val]||'';}}
 
+// Touch handlers with scroll detection
+function handleTouchStart(e, day, time) {
+  const touch = e.touches[0];
+  touchStartPos = { x: touch.clientX, y: touch.clientY };
+  touchDidPaint = false;
+  // Don't paint yet — wait to see if it's a scroll
+  isPainting = false;
+}
+
+function handleTouchEnd(e, day, time) {
+  if (!touchStartPos) return;
+  const touch = e.changedTouches[0];
+  const dx = Math.abs(touch.clientX - touchStartPos.x);
+  const dy = Math.abs(touch.clientY - touchStartPos.y);
+  // Only paint if finger didn't move much (tap, not scroll)
+  if (dx < TOUCH_THRESHOLD && dy < TOUCH_THRESHOLD) {
+    touchDidPaint = true;
+    // Simulate a single paint action
+    if (!canEditGrid()) return;
+    const target = getEditTarget(), data = allData[target] || {};
+    const key = `${day}|${time}`, cur = data[key] || '';
+    let newVal;
+    if (paintStatus === 'cycle') { const i = CYCLE.indexOf(cur); newVal = CYCLE[(i+1)%CYCLE.length]; }
+    else if (paintStatus === 'clear') newVal = '';
+    else newVal = paintStatus;
+    if (newVal) data[key] = newVal; else delete data[key];
+    allData[target] = data;
+    updateCell(key, data[key]);
+    debounceSave();
+  }
+  touchStartPos = null;
+  isPainting = false;
+  lastPaintedKey = null;
+}
+
+function handleTouchMove(e){
+  // If finger moves beyond threshold, it's a scroll — don't paint
+  if (!touchStartPos) return;
+  const touch = e.touches[0];
+  const dx = Math.abs(touch.clientX - touchStartPos.x);
+  const dy = Math.abs(touch.clientY - touchStartPos.y);
+  if (dx > TOUCH_THRESHOLD || dy > TOUCH_THRESHOLD) {
+    // It's a scroll, cancel any paint intent
+    touchStartPos = null;
+    isPainting = false;
+  }
+}
+
 let saveTimeout=null;
 function debounceSave(){if(saveTimeout)clearTimeout(saveTimeout);const t=getEditTarget();saveTimeout=setTimeout(()=>{if(t&&allData[t])saveSchedule(t,allData[t]);},500);}
 document.addEventListener('mouseup',()=>{if(isPainting){isPainting=false;dragPaintVal=null;lastPaintedKey=null;debounceSave();}});
-document.addEventListener('touchend',()=>{if(isPainting){isPainting=false;dragPaintVal=null;lastPaintedKey=null;debounceSave();}});
 function handleTouchMove(e){if(!isPainting)return;e.preventDefault();const t=e.touches[0],el=document.elementFromPoint(t.clientX,t.clientY);if(el&&el.classList.contains('cell')&&el.dataset.key){const i=el.dataset.key.lastIndexOf('|');continuePaint(el.dataset.key.substring(0,i),el.dataset.key.substring(i+1));}}
 
 // ===== EDIT GRID =====
@@ -553,7 +618,7 @@ function renderEditGrid(name,editable){
     html+=`<tr><td class="time-col${lunch?' lunch-hour':''}">${time}</td>`;
     for(const day of DAYS){
       const key=`${day}|${time}`,val=data[key]||'';
-      html+=`<td class="cell${lunch?' lunch-hour':''}" data-key="${key}" data-val="${val}"${editable?` onmousedown="startPaint('${esc(day)}','${time}')" onmouseenter="continuePaint('${esc(day)}','${time}')" ontouchstart="startPaint('${esc(day)}','${time}')" ontouchmove="handleTouchMove(event)"`:''} >${STATUS_SHORT[val]||''}</td>`;
+      html+=`<td class="cell${lunch?' lunch-hour':''}" data-key="${key}" data-val="${val}"${editable?` onmousedown="startPaint('${esc(day)}','${time}',event)" onmouseenter="continuePaint('${esc(day)}','${time}')" ontouchstart="handleTouchStart(event,'${esc(day)}','${time}')" ontouchend="handleTouchEnd(event,'${esc(day)}','${time}')" ontouchmove="handleTouchMove(event)"`:''} >${STATUS_SHORT[val]||''}</td>`;
     }
     html+='</tr>';
   }
