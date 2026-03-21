@@ -160,13 +160,16 @@
   td.overview-cell.clickable { cursor: pointer; }
   td.overview-cell.clickable:hover { filter: brightness(0.94); }
   .ov-edit-toggle {
-    display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; margin-left: 6px;
+    display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; margin-left: 8px;
     border: 1.5px solid var(--border); border-radius: 5px; cursor: pointer;
-    font-size: 0.72em; font-weight: 500; color: var(--text-dim); background: var(--surface);
-    vertical-align: middle; transition: all 0.15s;
+    font-size: 0.7em; font-weight: 600; color: var(--text-dim); background: var(--surface2);
+    vertical-align: middle; transition: all 0.15s; letter-spacing: 0.01em;
   }
-  .ov-edit-toggle:hover { border-color: var(--accent); color: var(--accent); }
-  .ov-edit-toggle.active { border-color: var(--green); color: var(--green); background: rgba(26,92,58,0.06); }
+  .ov-edit-toggle:hover { border-color: var(--green); color: var(--green); }
+  .ov-edit-toggle.active {
+    border-color: var(--green); color: #fff; background: var(--green);
+    box-shadow: 0 1px 3px rgba(26,92,58,0.25);
+  }
   td.overview-cell.lunch-hour { border-top: 1.5px solid var(--border-strong); border-bottom: 1.5px solid var(--border-strong); }
   td.overview-cell.lunch-hour:not([data-lvl]) { background: var(--lunch-bg); }
   .ov-tags { display: flex; flex-wrap: wrap; gap: 2px; justify-content: center; }
@@ -265,9 +268,9 @@
 
 <div id="app-screen">
   <header>
-    <h2>Team Scheduler</h2>
+    <h2>Team Scheduler <span id="ov-toggle-container"></span></h2>
     <div class="header-right">
-      <span style="font-size:0.7em;color:var(--text-dim);opacity:0.5;">v1.9</span>
+      <span style="font-size:0.7em;color:var(--text-dim);opacity:0.5;">v2.0</span>
       <span><span class="status-dot" id="status-dot"></span><span id="status-text">Connecting...</span></span>
       <button class="btn-small" id="admin-toggle-btn" onclick="toggleAdmin()">Admin</button>
       <button class="btn-small" onclick="logout()">Switch User</button>
@@ -464,6 +467,8 @@ function switchTab(tab){
   activeTab=tab;
   document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.tab===tab));
   const toolbar=document.getElementById('paint-toolbar-container'),grid=document.getElementById('grid-container');
+  const toggleC=document.getElementById('ov-toggle-container');
+  if(tab!=='overview'&&toggleC) toggleC.innerHTML='';
   if(tab==='overview'){
     toolbar.innerHTML='';
     renderOverview();
@@ -479,7 +484,7 @@ function switchTab(tab){
     if(canEdit){
       const note=!isMe?' <span style="color:var(--orange);font-size:0.8em;">(editing as admin)</span>':'';
       toolbar.innerHTML=`<div class="paint-toolbar"><span class="paint-label">Status:${note}</span>
-        <button class="paint-btn ${paintStatus==='cycle'?'active':''}" data-status="cycle" onclick="setPaint('cycle',this)">🖱 Cycle Status</button>
+        <button class="paint-btn ${paintStatus==='cycle'?'active':''}" data-status="cycle" onclick="setPaint('cycle',this)" title="Click to cycle through Available → Maybe → Busy → Clear">↖ Toggle Status</button>
         <button class="paint-btn ${paintStatus==='A'?'active':''}" data-status="A" onclick="setPaint('A',this)">✓ Available</button>
         <button class="paint-btn ${paintStatus==='M'?'active':''}" data-status="M" onclick="setPaint('M',this)">~ Maybe</button>
         <button class="paint-btn ${paintStatus==='B'?'active':''}" data-status="B" onclick="setPaint('B',this)">✗ Busy</button>
@@ -655,11 +660,14 @@ function renderOverview(){
   const canClick = !!currentUser && ovEditMode;
 
   // Toggle button in header
-  const toggleBtn = currentUser
-    ? `<span class="ov-edit-toggle ${ovEditMode?'active':''}" onclick="toggleOvEdit()">🖱 ${ovEditMode?'Editing':'Edit'}</span>`
-    : '';
+  const toggleContainer = document.getElementById('ov-toggle-container');
+  if (toggleContainer) {
+    toggleContainer.innerHTML = currentUser
+      ? `<span class="ov-edit-toggle ${ovEditMode?'active':''}" onclick="toggleOvEdit()" title="Toggle to click cells and set your availability directly on the overview">↖ ${ovEditMode?'Editing':'Edit'}</span>`
+      : '';
+  }
 
-  let html='<table><thead><tr><th class="time-col">Time '+toggleBtn+'</th>';
+  let html='<table><thead><tr><th class="time-col">Time</th>';
   for(const day of DAYS) html+=`<th>${day}</th>`;
   html+='</tr></thead><tbody>';
 
