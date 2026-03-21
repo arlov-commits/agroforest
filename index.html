@@ -587,11 +587,14 @@ function startPaint(day, time) {
   const key = `${day}|${time}`;
   const current = data[key] || '';
 
-  // Cycling: if cell already matches paint mode, cycle to next status
-  if (current === paintStatus || (current === '' && paintStatus === '')) {
-    dragPaintVal = CYCLE[(CYCLE.indexOf(current) + 1) % CYCLE.length];
+  // If cell is empty, apply the selected paint mode
+  // If cell has a value, cycle to the next status in the chain
+  if (current === '') {
+    dragPaintVal = paintStatus || CYCLE[0]; // empty paintStatus = eraser, use first in cycle
   } else {
-    dragPaintVal = paintStatus;
+    // Always cycle from current value: A -> M -> B -> clear -> A
+    const idx = CYCLE.indexOf(current);
+    dragPaintVal = CYCLE[(idx + 1) % CYCLE.length];
   }
 
   if (dragPaintVal) data[key] = dragPaintVal;
