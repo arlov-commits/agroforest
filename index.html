@@ -17,6 +17,8 @@
     --orange: #e07020;
     --red: #e94560;
     --border: #2a2a4a;
+    --maybe-bg: #5a4a1a;
+    --maybe-text: #f0d060;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
@@ -26,249 +28,198 @@
     min-height: 100vh;
     overflow-x: hidden;
   }
-  /* --- LOGIN SCREEN --- */
+
+  /* --- LOGIN --- */
   #login-screen {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-    padding: 20px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    min-height: 100vh; padding: 20px;
   }
   #login-screen h1 { font-size: 2em; margin-bottom: 8px; }
   #login-screen p { color: var(--text-dim); margin-bottom: 24px; }
   #login-screen input {
-    padding: 12px 16px;
-    font-size: 1.1em;
-    border: 2px solid var(--border);
-    border-radius: 8px;
-    background: var(--surface);
-    color: var(--text);
-    width: 280px;
-    margin-bottom: 12px;
-    outline: none;
+    padding: 12px 16px; font-size: 1.1em; border: 2px solid var(--border); border-radius: 8px;
+    background: var(--surface); color: var(--text); width: 280px; margin-bottom: 12px; outline: none;
   }
   #login-screen input:focus { border-color: var(--accent); }
-  #login-screen button {
-    padding: 12px 32px;
-    font-size: 1.1em;
-    border: none;
-    border-radius: 8px;
-    background: var(--accent);
-    color: #fff;
-    cursor: pointer;
-    font-weight: 600;
+  #login-screen .join-btn {
+    padding: 12px 32px; font-size: 1.1em; border: none; border-radius: 8px;
+    background: var(--accent); color: #fff; cursor: pointer; font-weight: 600;
   }
-  #login-screen button:hover { opacity: 0.9; }
+  #login-screen .join-btn:hover { opacity: 0.9; }
   .existing-users { margin-top: 24px; text-align: center; }
   .existing-users p { font-size: 0.9em; margin-bottom: 8px; }
   .user-chip {
-    display: inline-block;
-    padding: 6px 14px;
-    margin: 4px;
-    border-radius: 20px;
-    background: var(--surface2);
-    cursor: pointer;
-    font-size: 0.9em;
-    border: 1px solid var(--border);
-    color: var(--text);
+    display: inline-block; padding: 6px 14px; margin: 4px; border-radius: 20px;
+    background: var(--surface2); cursor: pointer; font-size: 0.9em;
+    border: 1px solid var(--border); color: var(--text);
   }
   .user-chip:hover { border-color: var(--accent); background: var(--surface); }
 
-  /* --- APP SCREEN --- */
+  /* --- APP --- */
   #app-screen { display: none; }
   header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 12px 16px;
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
-    position: sticky;
-    top: 0;
-    z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 16px; background: var(--surface); border-bottom: 1px solid var(--border);
+    position: sticky; top: 0; z-index: 100;
   }
   header h2 { font-size: 1.1em; }
-  .status-dot {
-    display: inline-block;
-    width: 8px; height: 8px;
-    border-radius: 50%;
-    margin-right: 6px;
-  }
+  .status-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; }
   .status-dot.live { background: var(--green); }
   .status-dot.offline { background: var(--red); }
-  .header-right { display: flex; align-items: center; gap: 12px; font-size: 0.85em; }
+  .header-right { display: flex; align-items: center; gap: 8px; font-size: 0.85em; flex-wrap: wrap; }
   .btn-small {
-    padding: 4px 12px;
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    background: var(--surface2);
-    color: var(--text);
-    cursor: pointer;
-    font-size: 0.85em;
+    padding: 4px 12px; border: 1px solid var(--border); border-radius: 6px;
+    background: var(--surface2); color: var(--text); cursor: pointer; font-size: 0.85em;
   }
   .btn-small:hover { border-color: var(--accent); }
+  .btn-small.admin-active { border-color: var(--yellow); color: var(--yellow); }
 
   /* --- TABS --- */
   .tabs {
-    display: flex;
-    gap: 0;
-    padding: 0 8px;
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
+    display: flex; gap: 0; padding: 0 8px; background: var(--surface);
+    border-bottom: 1px solid var(--border); overflow-x: auto; -webkit-overflow-scrolling: touch;
   }
+  .tabs::-webkit-scrollbar { display: none; }
   .tab {
-    padding: 10px 16px;
-    cursor: pointer;
-    font-size: 0.9em;
-    white-space: nowrap;
-    border-bottom: 2px solid transparent;
-    color: var(--text-dim);
-    background: none;
-    border-top: none; border-left: none; border-right: none;
+    padding: 10px 16px; cursor: pointer; font-size: 0.9em; white-space: nowrap;
+    border-bottom: 2px solid transparent; color: var(--text-dim);
+    background: none; border-top: none; border-left: none; border-right: none;
+    font-family: inherit;
   }
   .tab:hover { color: var(--text); }
   .tab.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 600; }
+  .tab.you-tab {
+    color: var(--green); font-weight: 700; background: rgba(78,204,163,0.08);
+    border-bottom-color: var(--green);
+  }
+  .tab.you-tab.active { color: var(--green); border-bottom-color: var(--green); }
 
   /* --- PAINT TOOLBAR --- */
   .paint-toolbar {
-    display: flex;
-    gap: 6px;
-    padding: 10px 16px;
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
-    flex-wrap: wrap;
-    align-items: center;
+    display: flex; gap: 6px; padding: 10px 16px; background: var(--surface);
+    border-bottom: 1px solid var(--border); flex-wrap: wrap; align-items: center;
   }
   .paint-btn {
-    padding: 6px 14px;
-    border: 2px solid var(--border);
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 0.85em;
-    font-weight: 600;
-    background: var(--surface2);
-    color: var(--text);
+    padding: 6px 14px; border: 2px solid var(--border); border-radius: 6px;
+    cursor: pointer; font-size: 0.85em; font-weight: 600; background: var(--surface2); color: var(--text);
+    font-family: inherit;
   }
   .paint-btn.active { border-color: #fff; }
   .paint-btn[data-status="A"] { background: #2d6a4f; color: #b7e4c7; }
-  .paint-btn[data-status="X"] { background: #7f5539; color: #ddb892; }
-  .paint-btn[data-status="P"] { background: #5a4a8a; color: #c8b6ff; }
+  .paint-btn[data-status="M"] { background: var(--maybe-bg); color: var(--maybe-text); }
   .paint-btn[data-status="B"] { background: #6b2039; color: #ffb3c1; }
   .paint-btn[data-status="clear"] { background: var(--surface); }
   .paint-label { color: var(--text-dim); font-size: 0.8em; margin-right: 4px; }
-  .fill-all-btn {
-    margin-left: auto;
-    padding: 6px 12px;
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    background: var(--surface2);
-    color: var(--text-dim);
-    cursor: pointer;
-    font-size: 0.8em;
-  }
-  .fill-all-btn:hover { border-color: var(--accent); color: var(--text); }
 
   /* --- GRID --- */
-  .grid-container {
-    overflow-x: auto;
-    padding: 8px;
-    -webkit-overflow-scrolling: touch;
-  }
-  table {
-    border-collapse: collapse;
-    width: 100%;
-    min-width: 700px;
-    user-select: none;
-    -webkit-user-select: none;
-  }
-  th, td {
-    border: 1px solid var(--border);
-    text-align: center;
-    font-size: 0.8em;
-  }
+  .grid-container { overflow-x: auto; padding: 8px; -webkit-overflow-scrolling: touch; }
+  table { border-collapse: collapse; width: 100%; min-width: 700px; user-select: none; -webkit-user-select: none; }
+  th, td { border: 1px solid var(--border); text-align: center; font-size: 0.8em; }
   th {
-    background: var(--surface);
-    padding: 8px 4px;
-    position: sticky;
-    top: 0;
-    z-index: 10;
-    font-weight: 600;
+    background: var(--surface); padding: 8px 4px; position: sticky; top: 0; z-index: 10; font-weight: 600;
   }
   .time-col {
-    position: sticky;
-    left: 0;
-    z-index: 5;
-    background: var(--surface);
-    padding: 4px 8px;
-    white-space: nowrap;
-    font-weight: 500;
-    min-width: 70px;
+    position: sticky; left: 0; z-index: 5; background: var(--surface); padding: 4px 8px;
+    white-space: nowrap; font-weight: 500; min-width: 70px;
   }
-  /* Edit grid cells */
+  .time-col.lunch-hour { background: #1e2a1e; }
+  th.lunch-col { }
+
   td.cell {
-    padding: 6px 2px;
-    cursor: pointer;
-    min-width: 72px;
-    height: 32px;
-    transition: background 0.1s;
+    padding: 6px 2px; cursor: pointer; min-width: 72px; height: 32px; transition: background 0.1s;
+    touch-action: none;
   }
   td.cell:hover { filter: brightness(1.2); }
   td.cell[data-val="A"] { background: #2d6a4f; color: #b7e4c7; }
-  td.cell[data-val="X"] { background: #7f5539; color: #ddb892; }
-  td.cell[data-val="P"] { background: #5a4a8a; color: #c8b6ff; }
+  td.cell[data-val="M"] { background: var(--maybe-bg); color: var(--maybe-text); }
   td.cell[data-val="B"] { background: #6b2039; color: #ffb3c1; }
+  td.cell.lunch-hour { border-left-color: #3a4a2a; border-right-color: #3a4a2a; }
+  td.cell.lunch-hour:not([data-val="A"]):not([data-val="M"]):not([data-val="B"]) { background: #1a2218; }
 
-  /* Overview cells */
+  /* Overview */
   td.overview-cell { padding: 3px 2px; min-width: 90px; vertical-align: top; }
+  td.overview-cell.lunch-hour:not(.highlight-good) { background: #1a2218; }
   .ov-tags { display: flex; flex-wrap: wrap; gap: 2px; justify-content: center; }
-  .ov-tag {
-    font-size: 0.7em;
-    padding: 1px 5px;
-    border-radius: 3px;
-    white-space: nowrap;
-  }
+  .ov-tag { font-size: 0.7em; padding: 1px 5px; border-radius: 3px; white-space: nowrap; }
   .ov-tag.avail { background: #2d6a4f; color: #b7e4c7; }
-  .ov-tag.flex  { background: #7f5539; color: #ddb892; }
-  .ov-tag.last  { background: #5a4a8a; color: #c8b6ff; }
+  .ov-tag.maybe { background: var(--maybe-bg); color: var(--maybe-text); }
   td.highlight-good { background: rgba(78, 204, 163, 0.12); }
 
-  /* --- ADD MEMBER PANEL --- */
-  .add-panel {
-    padding: 24px;
-    text-align: center;
+  /* Summary */
+  .day-summary {
+    margin-top: 20px; padding: 16px; background: var(--surface); border-radius: 8px;
+    border: 1px solid var(--border);
   }
+  .day-summary h3 { font-size: 1em; margin-bottom: 12px; color: var(--green); }
+  .summary-day { margin-bottom: 14px; }
+  .summary-day-label { font-weight: 600; font-size: 0.9em; margin-bottom: 4px; color: var(--text); }
+  .summary-chunk {
+    display: inline-block; padding: 4px 10px; margin: 2px 4px 2px 0; border-radius: 6px; font-size: 0.82em;
+  }
+  .summary-chunk.peak { background: #2d6a4f; color: #b7e4c7; }
+  .summary-chunk.decent { background: #2a3a4f; color: #99bbdd; }
+  .summary-chunk.hot-hours { background: rgba(224,112,32,0.15); color: var(--orange); font-style: italic; font-size: 0.78em; }
+  .summary-none { color: var(--text-dim); font-size: 0.82em; font-style: italic; }
+
+  /* Admin */
+  .admin-bar {
+    padding: 8px 16px; background: rgba(240,192,64,0.08); border-bottom: 1px solid rgba(240,192,64,0.2);
+    font-size: 0.82em; color: var(--yellow); display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  }
+  .admin-bar .del-btn {
+    padding: 3px 10px; border: 1px solid rgba(240,192,64,0.3); border-radius: 5px;
+    background: transparent; color: var(--yellow); cursor: pointer; font-size: 0.85em; font-family: inherit;
+  }
+  .admin-bar .del-btn:hover { background: rgba(240,192,64,0.15); }
+  .admin-bar .del-btn.danger { border-color: var(--red); color: var(--red); }
+  .admin-bar .del-btn.danger:hover { background: rgba(233,69,96,0.15); }
+
+  /* Modal */
+  .modal-bg {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex;
+    align-items: center; justify-content: center; z-index: 500;
+  }
+  .modal {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+    padding: 24px; max-width: 380px; width: 90%;
+  }
+  .modal h3 { margin-bottom: 12px; }
+  .modal input {
+    width: 100%; padding: 10px 12px; border: 2px solid var(--border); border-radius: 8px;
+    background: var(--bg); color: var(--text); font-size: 1em; margin-bottom: 12px; outline: none;
+    font-family: inherit;
+  }
+  .modal input:focus { border-color: var(--accent); }
+  .modal-btns { display: flex; gap: 8px; justify-content: flex-end; }
+  .modal-btns button {
+    padding: 8px 18px; border: 1px solid var(--border); border-radius: 6px;
+    background: var(--surface2); color: var(--text); cursor: pointer; font-family: inherit;
+  }
+  .modal-btns button.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .modal-btns button:hover { opacity: 0.9; }
+  .modal .error-msg { color: var(--red); font-size: 0.85em; margin-bottom: 8px; }
+  .modal .info-msg { color: var(--text-dim); font-size: 0.82em; margin-bottom: 10px; line-height: 1.4; }
+
+  /* Add panel */
+  .add-panel { padding: 24px; text-align: center; }
   .add-panel input {
-    padding: 10px 14px;
-    border: 2px solid var(--border);
-    border-radius: 8px;
-    background: var(--surface);
-    color: var(--text);
-    font-size: 1em;
-    width: 220px;
-    margin-right: 8px;
-    outline: none;
+    padding: 10px 14px; border: 2px solid var(--border); border-radius: 8px;
+    background: var(--surface); color: var(--text); font-size: 1em; width: 220px;
+    margin-right: 8px; outline: none;
   }
   .add-panel input:focus { border-color: var(--accent); }
   .add-panel button {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 8px;
-    background: var(--accent);
-    color: #fff;
-    cursor: pointer;
-    font-weight: 600;
+    padding: 10px 20px; border: none; border-radius: 8px; background: var(--accent);
+    color: #fff; cursor: pointer; font-weight: 600;
   }
 
-  /* --- RESPONSIVE --- */
   @media (max-width: 600px) {
     .paint-toolbar { gap: 4px; padding: 8px 10px; }
     .paint-btn { padding: 5px 10px; font-size: 0.8em; }
     th, td { font-size: 0.7em; }
     td.cell { min-width: 56px; height: 28px; }
     header h2 { font-size: 0.95em; }
+    .header-right { gap: 4px; }
   }
 </style>
 </head>
@@ -278,8 +229,8 @@
 <div id="login-screen">
   <h1>Team Scheduler</h1>
   <p>Pick your name or type a new one</p>
-  <input type="text" id="name-input" placeholder="Your name..." autocomplete="off">
-  <button onclick="joinAs()">Join</button>
+  <input type="text" id="name-input" placeholder="Your name..." autocomplete="off" onkeydown="if(event.key==='Enter')joinAs()">
+  <button class="join-btn" onclick="joinAs()">Join</button>
   <div class="existing-users" id="existing-users"></div>
 </div>
 
@@ -289,57 +240,65 @@
     <h2>Team Scheduler</h2>
     <div class="header-right">
       <span><span class="status-dot" id="status-dot"></span><span id="status-text">Connecting...</span></span>
+      <button class="btn-small" id="admin-toggle-btn" onclick="toggleAdmin()">Admin</button>
       <button class="btn-small" onclick="logout()">Switch User</button>
     </div>
   </header>
+  <div id="admin-bar-container"></div>
   <div class="tabs" id="tabs"></div>
   <div id="paint-toolbar-container"></div>
   <div class="grid-container" id="grid-container"></div>
 </div>
+
+<div id="modal-container"></div>
 
 <script>
 // ===== CONFIG =====
 const SUPABASE_URL = 'https://nxjypjgqsywxukcnchmh.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im54anlwamdxc3l3eHVrY25jaG1oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQxMTAzNzQsImV4cCI6MjA4OTY4NjM3NH0.Hh1GErLUxJbswFJGi8xVEzD60AUkRX0JVPgo91pdVKY';
 
-// Rolling 10-day window starting today, skipping Sundays
+// Rolling 10-day window (including Sundays)
 const DAY_NAMES = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 const MONTH_NAMES = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 function buildDays() {
   const days = [];
-  const today = new Date();
-  let d = new Date(today);
-  while (days.length < 10) {
-    if (d.getDay() !== 0) { // skip Sunday
-      const label = `${DAY_NAMES[d.getDay()]} ${MONTH_NAMES[d.getMonth()]} ${d.getDate()}`;
-      days.push(label);
-    }
+  const d = new Date();
+  for (let i = 0; i < 10; i++) {
+    days.push(`${DAY_NAMES[d.getDay()]} ${MONTH_NAMES[d.getMonth()]} ${d.getDate()}`);
     d.setDate(d.getDate() + 1);
   }
   return days;
 }
 const DAYS = buildDays();
+
 const TIMES = [];
 for (let h = 7; h < 18; h++) {
   for (let m = 0; m < 60; m += 30) {
     const hr = h > 12 ? h - 12 : h;
     const ampm = h >= 12 ? 'PM' : 'AM';
-    const mm = m === 0 ? '00' : '30';
-    TIMES.push(`${hr}:${mm} ${ampm}`);
+    TIMES.push(`${hr}:${m === 0 ? '00' : '30'} ${ampm}`);
   }
 }
 
-const STATUS_LABELS = { A: 'Available', X: 'Flexible', P: '🐼 Last Resort', B: '💢 Busy' };
-const STATUS_SHORT  = { A: '✓', X: '~', P: '🐼', B: '💢' };
+function isLunchTime(time) {
+  return time.startsWith('11:00') || time.startsWith('11:30');
+}
+
+// Statuses: A = Available, M = Maybe, B = Busy
+const CYCLE = ['A', 'M', 'B', ''];  // paint cycling order
+const STATUS_SHORT = { A: '✓', M: '~', B: '✗' };
+const STATUS_LABELS = { A: 'Available', M: 'Maybe', B: 'Busy' };
 
 let currentUser = null;
-let allData = {};       // { name: { "Mon 1|7:00 AM": "A", ... } }
+let allData = {};
 let paintStatus = 'A';
 let isPainting = false;
 let activeTab = 'overview';
 let isOnline = false;
+let isAdmin = false;
+let admins = {};  // { name: hashedPassword }
 
-// ===== SUPABASE REST HELPERS =====
+// ===== SUPABASE REST =====
 async function sbFetch(path, opts = {}) {
   const url = `${SUPABASE_URL}/rest/v1/${path}`;
   const headers = {
@@ -349,14 +308,10 @@ async function sbFetch(path, opts = {}) {
     'Prefer': opts.prefer || ''
   };
   const res = await fetch(url, { ...opts, headers: { ...headers, ...opts.headers } });
-  if (!res.ok) {
-    const text = await res.text();
-    throw new Error(`Supabase ${res.status}: ${text}`);
-  }
+  if (!res.ok) { const t = await res.text(); throw new Error(`Supabase ${res.status}: ${t}`); }
   if (res.status === 204) return null;
   const ct = res.headers.get('content-type') || '';
-  if (ct.includes('json')) return res.json();
-  return null;
+  return ct.includes('json') ? res.json() : null;
 }
 
 async function loadAllSchedules() {
@@ -364,38 +319,194 @@ async function loadAllSchedules() {
     const rows = await sbFetch('schedules?select=*');
     allData = {};
     if (rows && Array.isArray(rows)) {
-      for (const row of rows) {
-        allData[row.name] = typeof row.data === 'string' ? JSON.parse(row.data) : row.data;
-      }
+      for (const r of rows) allData[r.name] = typeof r.data === 'string' ? JSON.parse(r.data) : r.data;
     }
     setOnline(true);
-    return true;
-  } catch (e) {
-    console.error('Load error:', e);
-    setOnline(false);
-    return false;
-  }
+  } catch (e) { console.error('Load:', e); setOnline(false); }
 }
 
 async function saveSchedule(name, data) {
   try {
     await sbFetch('schedules', {
-      method: 'POST',
-      prefer: 'resolution=merge-duplicates',
-      body: JSON.stringify({
-        id: name.toLowerCase().replace(/\s+/g, '-'),
-        name: name,
-        data: data,
-        updated_at: new Date().toISOString()
-      })
+      method: 'POST', prefer: 'resolution=merge-duplicates',
+      body: JSON.stringify({ id: name.toLowerCase().replace(/[^a-z0-9]/g, '-'), name, data, updated_at: new Date().toISOString() })
     });
     setOnline(true);
+  } catch (e) { console.error('Save:', e); setOnline(false); }
+}
+
+async function deleteSchedule(name) {
+  try {
+    await sbFetch(`schedules?id=eq.${encodeURIComponent(name.toLowerCase().replace(/[^a-z0-9]/g, '-'))}`, { method: 'DELETE' });
+    delete allData[name];
+  } catch (e) { console.error('Delete:', e); }
+}
+
+// ===== ADMIN SYSTEM =====
+async function loadAdmins() {
+  try {
+    const rows = await sbFetch('schedules?id=eq.__admins__&select=*');
+    if (rows && rows.length > 0) {
+      admins = typeof rows[0].data === 'string' ? JSON.parse(rows[0].data) : rows[0].data;
+    } else {
+      // Initialize with default admin
+      admins = { Art: hashPw('amitofo108') };
+      await saveAdmins();
+    }
   } catch (e) {
-    console.error('Save error:', e);
-    setOnline(false);
+    console.error('Admin load:', e);
+    admins = { Art: hashPw('amitofo108') };
   }
 }
 
+async function saveAdmins() {
+  try {
+    await sbFetch('schedules', {
+      method: 'POST', prefer: 'resolution=merge-duplicates',
+      body: JSON.stringify({ id: '__admins__', name: '__admins__', data: admins, updated_at: new Date().toISOString() })
+    });
+  } catch (e) { console.error('Admin save:', e); }
+}
+
+function hashPw(pw) {
+  // Simple hash for client-side — not crypto-grade but sufficient for team tool
+  let h = 0;
+  for (let i = 0; i < pw.length; i++) { h = ((h << 5) - h + pw.charCodeAt(i)) | 0; }
+  return 'h' + Math.abs(h).toString(36);
+}
+
+function toggleAdmin() {
+  if (isAdmin) {
+    isAdmin = false;
+    updateAdminUI();
+    return;
+  }
+  showModal(`
+    <h3>Admin Login</h3>
+    <p class="info-msg">Enter your admin password. If you're "${esc(currentUser)}" and have admin access, this will unlock admin features.</p>
+    <input type="password" id="admin-pw" placeholder="Password..." onkeydown="if(event.key==='Enter')confirmAdmin()">
+    <div id="admin-error"></div>
+    <div class="modal-btns">
+      <button onclick="closeModal()">Cancel</button>
+      <button class="primary" onclick="confirmAdmin()">Login</button>
+    </div>
+  `);
+  setTimeout(() => { const el = document.getElementById('admin-pw'); if (el) el.focus(); }, 100);
+}
+
+function confirmAdmin() {
+  const pw = document.getElementById('admin-pw').value;
+  if (!pw) return;
+  const hashed = hashPw(pw);
+  if (admins[currentUser] === hashed) {
+    isAdmin = true;
+    closeModal();
+    updateAdminUI();
+  } else {
+    document.getElementById('admin-error').innerHTML = '<p class="error-msg">Wrong password.</p>';
+  }
+}
+
+function updateAdminUI() {
+  const btn = document.getElementById('admin-toggle-btn');
+  if (btn) btn.className = isAdmin ? 'btn-small admin-active' : 'btn-small';
+  renderAdminBar();
+}
+
+function renderAdminBar() {
+  const c = document.getElementById('admin-bar-container');
+  if (!isAdmin) { c.innerHTML = ''; return; }
+  const names = Object.keys(allData).filter(n => n !== '__admins__');
+  let html = '<div class="admin-bar"><span>Admin mode:</span>';
+  names.forEach(n => {
+    html += `<button class="del-btn danger" onclick="adminDeleteUser('${esc(n)}')">Delete ${esc(n)}</button>`;
+  });
+  html += `<button class="del-btn" onclick="showPromoteAdmin()">+ Make Admin</button>`;
+  html += `<button class="del-btn" onclick="showChangePassword()">Change My Password</button>`;
+  html += '</div>';
+  c.innerHTML = html;
+}
+
+function adminDeleteUser(name) {
+  if (!isAdmin) return;
+  if (!confirm(`Delete ${name} and all their data?`)) return;
+  deleteSchedule(name);
+  if (admins[name]) { delete admins[name]; saveAdmins(); }
+  buildTabs();
+  switchTab('overview');
+  renderAdminBar();
+}
+
+function showPromoteAdmin() {
+  const names = Object.keys(allData).filter(n => n !== '__admins__' && !admins[n]);
+  if (names.length === 0) { alert('All users are already admins.'); return; }
+  showModal(`
+    <h3>Make Someone Admin</h3>
+    <p class="info-msg">Pick a user and set their admin password. They'll use this password to access admin mode.</p>
+    <select id="promote-select" style="width:100%;padding:10px;border:2px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text);margin-bottom:12px;font-size:1em;">
+      ${names.map(n => `<option value="${esc(n)}">${esc(n)}</option>`).join('')}
+    </select>
+    <input type="password" id="promote-pw" placeholder="Set their password...">
+    <div id="promote-error"></div>
+    <div class="modal-btns">
+      <button onclick="closeModal()">Cancel</button>
+      <button class="primary" onclick="confirmPromote()">Make Admin</button>
+    </div>
+  `);
+}
+
+function confirmPromote() {
+  const name = document.getElementById('promote-select').value;
+  const pw = document.getElementById('promote-pw').value;
+  if (!pw || pw.length < 3) {
+    document.getElementById('promote-error').innerHTML = '<p class="error-msg">Password must be at least 3 characters.</p>';
+    return;
+  }
+  admins[name] = hashPw(pw);
+  saveAdmins();
+  closeModal();
+  renderAdminBar();
+  alert(`${name} is now an admin.`);
+}
+
+function showChangePassword() {
+  showModal(`
+    <h3>Change Your Admin Password</h3>
+    <input type="password" id="new-pw" placeholder="New password..." onkeydown="if(event.key==='Enter')confirmChangePw()">
+    <input type="password" id="new-pw2" placeholder="Confirm new password...">
+    <div id="pw-error"></div>
+    <div class="modal-btns">
+      <button onclick="closeModal()">Cancel</button>
+      <button class="primary" onclick="confirmChangePw()">Change</button>
+    </div>
+  `);
+  setTimeout(() => { const el = document.getElementById('new-pw'); if (el) el.focus(); }, 100);
+}
+
+function confirmChangePw() {
+  const pw1 = document.getElementById('new-pw').value;
+  const pw2 = document.getElementById('new-pw2').value;
+  if (!pw1 || pw1.length < 3) {
+    document.getElementById('pw-error').innerHTML = '<p class="error-msg">Password must be at least 3 characters.</p>';
+    return;
+  }
+  if (pw1 !== pw2) {
+    document.getElementById('pw-error').innerHTML = '<p class="error-msg">Passwords don\'t match.</p>';
+    return;
+  }
+  admins[currentUser] = hashPw(pw1);
+  saveAdmins();
+  closeModal();
+  alert('Password changed.');
+}
+
+// ===== MODAL =====
+function showModal(html) {
+  document.getElementById('modal-container').innerHTML = `<div class="modal-bg" onclick="if(event.target===this)closeModal()"><div class="modal">${html}</div></div>`;
+}
+function closeModal() { document.getElementById('modal-container').innerHTML = ''; }
+
+// ===== ONLINE STATUS =====
 function setOnline(online) {
   isOnline = online;
   const dot = document.getElementById('status-dot');
@@ -417,17 +528,15 @@ function startPolling() {
 // ===== LOGIN =====
 async function initLogin() {
   await loadAllSchedules();
-  const names = Object.keys(allData);
+  await loadAdmins();
+  const names = Object.keys(allData).filter(n => n !== '__admins__');
   const container = document.getElementById('existing-users');
   if (names.length > 0) {
     container.innerHTML = '<p style="color:var(--text-dim);font-size:0.9em;">Or pick an existing name:</p>' +
-      names.map(n => `<span class="user-chip" onclick="pickUser('${n.replace(/'/g, "\\'")}')">${n}</span>`).join('');
+      names.map(n => `<span class="user-chip" onclick="pickUser('${esc(n)}')">${esc(n)}</span>`).join('');
   }
-  // Check localStorage
   const saved = localStorage.getItem('scheduler-user');
-  if (saved && allData[saved]) {
-    enterApp(saved);
-  }
+  if (saved && allData[saved]) enterApp(saved);
 }
 
 function pickUser(name) {
@@ -448,30 +557,35 @@ function enterApp(name) {
   localStorage.setItem('scheduler-user', name);
   document.getElementById('login-screen').style.display = 'none';
   document.getElementById('app-screen').style.display = 'block';
+  isAdmin = false;
+  updateAdminUI();
   buildTabs();
-  switchTab('overview');
+  switchTab(name);  // Go to your own tab first
   startPolling();
 }
 
 function logout() {
   localStorage.removeItem('scheduler-user');
-  currentUser = null;
+  currentUser = null; isAdmin = false;
   if (pollTimer) clearInterval(pollTimer);
   document.getElementById('login-screen').style.display = 'flex';
   document.getElementById('app-screen').style.display = 'none';
+  document.getElementById('admin-bar-container').innerHTML = '';
   initLogin();
 }
 
 // ===== TABS =====
 function buildTabs() {
   const tabs = document.getElementById('tabs');
-  const names = Object.keys(allData);
+  const names = Object.keys(allData).filter(n => n !== '__admins__');
   let html = `<button class="tab" data-tab="overview" onclick="switchTab('overview')">Overview</button>`;
-  // Put current user first
-  const sorted = [currentUser, ...names.filter(n => n !== currentUser)];
-  for (const name of sorted) {
-    const label = name === currentUser ? `${name} (You)` : name;
-    html += `<button class="tab" data-tab="${name}" onclick="switchTab('${name.replace(/'/g, "\\'")}')">${label}</button>`;
+  // Current user tab right after Overview
+  if (currentUser && names.includes(currentUser)) {
+    html += `<button class="tab you-tab" data-tab="${esc(currentUser)}" onclick="switchTab('${esc(currentUser)}')">${esc(currentUser)} ★</button>`;
+  }
+  const others = names.filter(n => n !== currentUser).sort();
+  for (const name of others) {
+    html += `<button class="tab" data-tab="${esc(name)}" onclick="switchTab('${esc(name)}')">${esc(name)}</button>`;
   }
   html += `<button class="tab" data-tab="add" onclick="switchTab('add')">+ Add</button>`;
   tabs.innerHTML = html;
@@ -479,9 +593,13 @@ function buildTabs() {
 
 function switchTab(tab) {
   activeTab = tab;
-  // Highlight tab
   document.querySelectorAll('.tab').forEach(t => {
-    t.classList.toggle('active', t.dataset.tab === tab);
+    const isYou = t.classList.contains('you-tab');
+    if (isYou) {
+      t.classList.toggle('active', t.dataset.tab === tab);
+    } else {
+      t.classList.toggle('active', t.dataset.tab === tab);
+    }
   });
   const toolbar = document.getElementById('paint-toolbar-container');
   const grid = document.getElementById('grid-container');
@@ -491,28 +609,21 @@ function switchTab(tab) {
     renderOverview();
   } else if (tab === 'add') {
     toolbar.innerHTML = '';
-    grid.innerHTML = `
-      <div class="add-panel">
-        <h3 style="margin-bottom:16px;">Add Team Member</h3>
-        <input type="text" id="new-member-name" placeholder="Name...">
-        <button onclick="addMember()">Add</button>
-      </div>`;
+    grid.innerHTML = `<div class="add-panel"><h3 style="margin-bottom:16px;">Add Team Member</h3>
+      <input type="text" id="new-member-name" placeholder="Name..." onkeydown="if(event.key==='Enter')addMember()">
+      <button onclick="addMember()">Add</button></div>`;
   } else {
-    // Person's edit grid
     const isMe = tab === currentUser;
     if (isMe) {
-      toolbar.innerHTML = `
-        <div class="paint-toolbar">
-          <span class="paint-label">Paint:</span>
-          <button class="paint-btn active" data-status="A" onclick="setPaint('A',this)">✓ Available</button>
-          <button class="paint-btn" data-status="X" onclick="setPaint('X',this)">~ Flexible</button>
-          <button class="paint-btn" data-status="P" onclick="setPaint('P',this)">🐼 Last Resort</button>
-          <button class="paint-btn" data-status="B" onclick="setPaint('B',this)">💢 Busy</button>
-          <button class="paint-btn" data-status="clear" onclick="setPaint('',this)">Clear</button>
-          <button class="fill-all-btn" onclick="fillAll()">Fill All "${STATUS_SHORT[paintStatus] || '?'}"</button>
-        </div>`;
+      toolbar.innerHTML = `<div class="paint-toolbar">
+        <span class="paint-label">Paint:</span>
+        <button class="paint-btn ${paintStatus==='A'?'active':''}" data-status="A" onclick="setPaint('A',this)">✓ Available</button>
+        <button class="paint-btn ${paintStatus==='M'?'active':''}" data-status="M" onclick="setPaint('M',this)">~ Maybe</button>
+        <button class="paint-btn ${paintStatus==='B'?'active':''}" data-status="B" onclick="setPaint('B',this)">✗ Busy</button>
+        <button class="paint-btn ${paintStatus===''?'active':''}" data-status="clear" onclick="setPaint('',this)">Eraser</button>
+      </div>`;
     } else {
-      toolbar.innerHTML = `<div class="paint-toolbar"><span class="paint-label" style="font-style:italic;">Viewing ${tab}'s schedule (read-only)</span></div>`;
+      toolbar.innerHTML = `<div class="paint-toolbar"><span class="paint-label" style="font-style:italic;">Viewing ${esc(tab)}'s schedule (read-only)</span></div>`;
     }
     renderEditGrid(tab, isMe);
   }
@@ -523,34 +634,98 @@ function setPaint(status, btn) {
   paintStatus = status;
   document.querySelectorAll('.paint-btn').forEach(b => b.classList.remove('active'));
   if (btn) btn.classList.add('active');
-  // update fill-all label
-  const fab = document.querySelector('.fill-all-btn');
-  if (fab) fab.textContent = `Fill All "${STATUS_SHORT[paintStatus] || '—'}"`;
 }
 
-function fillAll() {
-  if (!currentUser || activeTab !== currentUser) return;
-  const data = allData[currentUser] || {};
-  for (const day of DAYS) {
-    for (const time of TIMES) {
-      const key = `${day}|${time}`;
-      if (paintStatus) data[key] = paintStatus;
-      else delete data[key];
-    }
-  }
-  allData[currentUser] = data;
-  renderEditGrid(currentUser, true);
-  saveSchedule(currentUser, data);
+function getNextCycle(currentVal) {
+  const idx = CYCLE.indexOf(currentVal || '');
+  return CYCLE[(idx + 1) % CYCLE.length];
 }
 
-function cellAction(day, time) {
+function cellAction(day, time, cycling) {
   if (!currentUser || activeTab !== currentUser) return;
   const data = allData[currentUser] || {};
   const key = `${day}|${time}`;
-  if (paintStatus) data[key] = paintStatus;
+
+  let newVal;
+  if (cycling) {
+    // First paint in a drag uses paintStatus, subsequent cells also use it
+    newVal = paintStatus;
+  } else {
+    newVal = paintStatus;
+  }
+
+  if (newVal) data[key] = newVal;
   else delete data[key];
   allData[currentUser] = data;
-  // Update cell in DOM
+
+  const cell = document.querySelector(`td[data-key="${CSS.escape(key)}"]`);
+  if (cell) {
+    cell.setAttribute('data-val', data[key] || '');
+    cell.textContent = STATUS_SHORT[data[key]] || '';
+  }
+}
+
+function cellCycleAction(day, time) {
+  if (!currentUser || activeTab !== currentUser) return;
+  const data = allData[currentUser] || {};
+  const key = `${day}|${time}`;
+  const current = data[key] || '';
+
+  // If current matches paintStatus, cycle to next. Otherwise set to paintStatus.
+  let newVal;
+  if (current === paintStatus || (current === '' && paintStatus === '')) {
+    newVal = getNextCycle(current);
+  } else {
+    newVal = paintStatus;
+  }
+
+  if (newVal) data[key] = newVal;
+  else delete data[key];
+  allData[currentUser] = data;
+
+  const cell = document.querySelector(`td[data-key="${CSS.escape(key)}"]`);
+  if (cell) {
+    cell.setAttribute('data-val', data[key] || '');
+    cell.textContent = STATUS_SHORT[data[key]] || '';
+  }
+}
+
+let dragPaintVal = null;
+
+function startPaint(day, time) {
+  isPainting = true;
+  // On first click: cycle behavior
+  const data = allData[currentUser] || {};
+  const key = `${day}|${time}`;
+  const current = data[key] || '';
+
+  // If cell already matches paint mode, cycle forward
+  if (current === paintStatus || (current === '' && paintStatus === '')) {
+    const next = getNextCycle(current);
+    dragPaintVal = next;
+  } else {
+    dragPaintVal = paintStatus;
+  }
+
+  if (dragPaintVal) data[key] = dragPaintVal;
+  else delete data[key];
+  allData[currentUser] = data;
+
+  const cell = document.querySelector(`td[data-key="${CSS.escape(key)}"]`);
+  if (cell) {
+    cell.setAttribute('data-val', data[key] || '');
+    cell.textContent = STATUS_SHORT[data[key]] || '';
+  }
+}
+
+function continuePaint(day, time) {
+  if (!isPainting || dragPaintVal === null) return;
+  const data = allData[currentUser] || {};
+  const key = `${day}|${time}`;
+  if (dragPaintVal) data[key] = dragPaintVal;
+  else delete data[key];
+  allData[currentUser] = data;
+
   const cell = document.querySelector(`td[data-key="${CSS.escape(key)}"]`);
   if (cell) {
     cell.setAttribute('data-val', data[key] || '');
@@ -562,10 +737,27 @@ let saveTimeout = null;
 function debounceSave() {
   if (saveTimeout) clearTimeout(saveTimeout);
   saveTimeout = setTimeout(() => {
-    if (currentUser && allData[currentUser]) {
-      saveSchedule(currentUser, allData[currentUser]);
-    }
+    if (currentUser && allData[currentUser]) saveSchedule(currentUser, allData[currentUser]);
   }, 500);
+}
+
+document.addEventListener('mouseup', () => { if (isPainting) { isPainting = false; dragPaintVal = null; debounceSave(); } });
+document.addEventListener('touchend', () => { if (isPainting) { isPainting = false; dragPaintVal = null; debounceSave(); } });
+
+function handleTouchMove(e) {
+  if (!isPainting) return;
+  e.preventDefault();
+  const touch = e.touches[0];
+  const el = document.elementFromPoint(touch.clientX, touch.clientY);
+  if (el && el.classList.contains('cell') && el.dataset.key) {
+    const [day, time] = splitKey(el.dataset.key);
+    continuePaint(day, time);
+  }
+}
+
+function splitKey(key) {
+  const i = key.lastIndexOf('|');
+  return [key.substring(0, i), key.substring(i + 1)];
 }
 
 // ===== EDIT GRID =====
@@ -576,16 +768,17 @@ function renderEditGrid(name, editable) {
   html += '</tr></thead><tbody>';
 
   for (const time of TIMES) {
-    html += `<tr><td class="time-col">${time}</td>`;
+    const lunch = isLunchTime(time);
+    html += `<tr><td class="time-col${lunch ? ' lunch-hour' : ''}">${time}</td>`;
     for (const day of DAYS) {
       const key = `${day}|${time}`;
       const val = data[key] || '';
       const label = STATUS_SHORT[val] || '';
-      html += `<td class="cell" data-key="${key}" data-val="${val}"
+      html += `<td class="cell${lunch ? ' lunch-hour' : ''}" data-key="${key}" data-val="${val}"
         ${editable ? `
-          onmousedown="startPaint('${day}','${time}')"
-          onmouseenter="continuePaint('${day}','${time}')"
-          ontouchstart="startPaint('${day}','${time}')"
+          onmousedown="startPaint('${esc(day)}','${time}')"
+          onmouseenter="continuePaint('${esc(day)}','${time}')"
+          ontouchstart="startPaint('${esc(day)}','${time}')"
           ontouchmove="handleTouchMove(event)"
         ` : ''}>${label}</td>`;
     }
@@ -595,36 +788,20 @@ function renderEditGrid(name, editable) {
   document.getElementById('grid-container').innerHTML = html;
 }
 
-function startPaint(day, time) {
-  isPainting = true;
-  cellAction(day, time);
-}
-function continuePaint(day, time) {
-  if (isPainting) cellAction(day, time);
-}
-document.addEventListener('mouseup', () => { if (isPainting) { isPainting = false; debounceSave(); } });
-document.addEventListener('touchend', () => { if (isPainting) { isPainting = false; debounceSave(); } });
-
-function handleTouchMove(e) {
-  if (!isPainting) return;
-  e.preventDefault();
-  const touch = e.touches[0];
-  const el = document.elementFromPoint(touch.clientX, touch.clientY);
-  if (el && el.classList.contains('cell') && el.dataset.key) {
-    const [day, time] = el.dataset.key.split('|');
-    cellAction(day, time);
-  }
-}
-
-// ===== OVERVIEW GRID =====
+// ===== OVERVIEW =====
 function renderOverview() {
-  const names = Object.keys(allData);
+  const names = Object.keys(allData).filter(n => n !== '__admins__');
   let html = '<table><thead><tr><th class="time-col">Time</th>';
   for (const day of DAYS) html += `<th>${day}</th>`;
   html += '</tr></thead><tbody>';
 
+  // Build score map for summary
+  const dayScores = {};
+  for (const day of DAYS) dayScores[day] = {};
+
   for (const time of TIMES) {
-    html += `<tr><td class="time-col">${time}</td>`;
+    const lunch = isLunchTime(time);
+    html += `<tr><td class="time-col${lunch ? ' lunch-hour' : ''}">${time}</td>`;
     for (const day of DAYS) {
       const key = `${day}|${time}`;
       let availCount = 0;
@@ -633,17 +810,96 @@ function renderOverview() {
         const val = (allData[name] || {})[key];
         if (!val || val === 'B') continue;
         if (val === 'A') availCount++;
-        const cls = val === 'A' ? 'avail' : val === 'X' ? 'flex' : 'last';
+        const cls = val === 'A' ? 'avail' : 'maybe';
         const short = name.length > 6 ? name.substring(0, 5) + '…' : name;
         tags += `<span class="ov-tag ${cls}">${short}</span>`;
       }
-      const highlight = availCount >= 3 ? ' highlight-good' : '';
-      html += `<td class="overview-cell${highlight}"><div class="ov-tags">${tags}</div></td>`;
+      const highlight = availCount >= 2 ? ' highlight-good' : '';
+      html += `<td class="overview-cell${lunch ? ' lunch-hour' : ''}${highlight}"><div class="ov-tags">${tags}</div></td>`;
+      dayScores[day][time] = availCount;
     }
     html += '</tr>';
   }
   html += '</tbody></table>';
+
+  // Build summary
+  html += buildSummary(dayScores);
+
   document.getElementById('grid-container').innerHTML = html;
+}
+
+function buildSummary(dayScores) {
+  let html = '<div class="day-summary"><h3>Suggested Best Hours</h3>';
+
+  for (const day of DAYS) {
+    const scores = dayScores[day];
+    // Find chunks of 2+ green availability
+    const chunks = findChunks(scores, 2);
+    if (chunks.length === 0) {
+      html += `<div class="summary-day"><div class="summary-day-label">${day}</div><span class="summary-none">No strong overlap yet</span></div>`;
+      continue;
+    }
+
+    html += `<div class="summary-day"><div class="summary-day-label">${day}</div>`;
+    for (const chunk of chunks) {
+      const isHot = isHotHours(chunk.start, chunk.end);
+      const peakClass = chunk.avgScore >= 3 ? 'peak' : 'decent';
+      html += `<span class="summary-chunk ${peakClass}">${chunk.start} – ${chunk.end} (${chunk.avgScore.toFixed(0)}+ avail)</span>`;
+      if (isHot) html += `<span class="summary-chunk hot-hours">⚠ high heat hours</span>`;
+    }
+    html += '</div>';
+  }
+
+  html += '</div>';
+  return html;
+}
+
+function findChunks(scores, minScore) {
+  const chunks = [];
+  let current = null;
+
+  for (let i = 0; i < TIMES.length; i++) {
+    const time = TIMES[i];
+    const score = scores[time] || 0;
+    if (score >= minScore) {
+      if (!current) {
+        current = { startIdx: i, start: time, scores: [score] };
+      } else {
+        current.scores.push(score);
+      }
+    } else {
+      if (current) {
+        current.end = TIMES[current.startIdx + current.scores.length - 1];
+        // Extend end time by 30min to show end of slot
+        const lastIdx = current.startIdx + current.scores.length - 1;
+        if (lastIdx + 1 < TIMES.length) current.end = TIMES[lastIdx + 1];
+        else current.end = '6:00 PM';
+        current.avgScore = current.scores.reduce((a, b) => a + b, 0) / current.scores.length;
+        chunks.push(current);
+        current = null;
+      }
+    }
+  }
+  if (current) {
+    const lastIdx = current.startIdx + current.scores.length - 1;
+    if (lastIdx + 1 < TIMES.length) current.end = TIMES[lastIdx + 1];
+    else current.end = '6:00 PM';
+    current.avgScore = current.scores.reduce((a, b) => a + b, 0) / current.scores.length;
+    chunks.push(current);
+  }
+
+  return chunks;
+}
+
+function isHotHours(startTime, endTime) {
+  // 1:00 PM to 3:00 PM are hot hours
+  const hotStart = TIMES.indexOf('1:00 PM');
+  const hotEnd = TIMES.indexOf('3:00 PM');
+  const chunkStart = TIMES.indexOf(startTime);
+  const chunkEnd = TIMES.indexOf(endTime);
+  if (chunkStart === -1 || hotStart === -1) return false;
+  // Check if any part of chunk overlaps hot hours
+  return chunkStart <= hotEnd && chunkEnd >= hotStart;
 }
 
 // ===== ADD MEMBER =====
@@ -657,6 +913,9 @@ function addMember() {
   buildTabs();
   switchTab(name);
 }
+
+// ===== HELPERS =====
+function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
 
 // ===== INIT =====
 initLogin();
