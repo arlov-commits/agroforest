@@ -28,12 +28,13 @@
     --border: #d4ccc2;
     --border-strong: #b5ada4;
     --lunch-bg: #ddd9d2;
-    /* Match levels */
-    --lvl1: #a0d89a; --lvl1-text: #0d3a1e;
-    --lvl2: #c8e4a0; --lvl2-text: #2a4a10;
-    --lvl3: #f0e0a0; --lvl3-text: #4a3a0e;
-    --lvl4: #f5d4a8; --lvl4-text: #6e3408;
-    --lvl5: #e8d0c0; --lvl5-text: #5a4030;
+    /* Match tiers — only for 2+ people */
+    --t1: #a0d89a; --t1-text: #0d3a1e;   /* green: 2+ available */
+    --t2: #e0d4b0; --t2-text: #5a4a28;   /* tan: 1 avail + 1+ maybe */
+    --t3: #cfc0e0; --t3-text: #3a2860;   /* purple: 2+ maybe, no avail */
+    --t1-dot: #2a8a3e;
+    --t2-dot: #a08840;
+    --t3-dot: #7050a0;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
@@ -163,12 +164,10 @@
   .ov-tag.avail { background: var(--green-bg); color: var(--green-text); }
   .ov-tag.maybe { background: var(--yellow-bg); color: var(--yellow-text); }
 
-  /* Match level highlighting */
-  td.overview-cell[data-lvl="1"] { background: var(--lvl1); }
-  td.overview-cell[data-lvl="2"] { background: var(--lvl2); }
-  td.overview-cell[data-lvl="3"] { background: var(--lvl3); }
-  td.overview-cell[data-lvl="4"] { background: var(--lvl4); }
-  td.overview-cell[data-lvl="5"] { background: var(--lvl5); }
+  /* Match tier highlighting */
+  td.overview-cell[data-lvl="1"] { background: var(--t1); }
+  td.overview-cell[data-lvl="2"] { background: var(--t2); }
+  td.overview-cell[data-lvl="3"] { background: var(--t3); }
 
   /* Summary rows */
   tr.summary-spacer td { height: 10px; border: none; background: transparent; }
@@ -180,14 +179,15 @@
     background: var(--surface); padding: 5px 4px; vertical-align: top;
     font-size: 0.72em; line-height: 1.6; border-color: var(--border); text-align: left;
   }
-  .best-slot { display: block; padding: 2px 0; }
-  .best-slot .sr { font-weight: 700; }
-  .best-slot .sr.l1 { color: var(--green-text); }
-  .best-slot .sr.l2 { color: var(--lvl2-text); }
-  .best-slot .sr.l3 { color: var(--yellow-text); }
-  .best-slot .sr.l4 { color: var(--orange-text); }
-  .best-slot .sp { color: var(--text-dim); font-size: 0.92em; }
-  .best-slot .hot-tag { color: var(--orange); font-style: italic; font-size: 0.9em; }
+  .best-slot { display: flex; align-items: baseline; gap: 4px; padding: 2px 0; }
+  .best-slot .tier-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; margin-top: 3px; }
+  .best-slot .tier-dot.t1 { background: var(--t1-dot); }
+  .best-slot .tier-dot.t2 { background: var(--t2-dot); }
+  .best-slot .tier-dot.t3 { background: var(--t3-dot); }
+  .best-slot .sr { font-weight: 700; color: var(--text); }
+  .best-slot .sdur { font-weight: 500; color: var(--text-dim); font-size: 0.9em; }
+  .best-slot .sp { color: var(--text-dim); font-size: 0.9em; }
+  .best-slot .hot-tag { color: var(--orange); font-style: italic; font-size: 0.88em; }
 
   /* Modal */
   .modal-bg {
@@ -257,7 +257,7 @@
   <header>
     <h2>Team Scheduler</h2>
     <div class="header-right">
-      <span style="font-size:0.7em;color:var(--text-dim);opacity:0.5;">v1.6</span>
+      <span style="font-size:0.7em;color:var(--text-dim);opacity:0.5;">v1.7</span>
       <span><span class="status-dot" id="status-dot"></span><span id="status-text">Connecting...</span></span>
       <button class="btn-small" id="admin-toggle-btn" onclick="toggleAdmin()">Admin</button>
       <button class="btn-small" onclick="logout()">Switch User</button>
@@ -532,18 +532,15 @@ function renderEditGrid(name,editable){
   document.getElementById('grid-container').innerHTML=html;
 }
 
-// ===== MATCH LEVEL SYSTEM =====
-// Lvl 1 (best):  2+ Available — strong green
-// Lvl 2:         1 Available + 1+ Maybe — yellow-green
-// Lvl 3:         2+ Maybe — yellow
-// Lvl 4:         1 Available + 0 Maybe (solo avail, still notable) — orange
-// Lvl 5:         1 Maybe only (barely notable) — muted
-function getMatchLevel(avail, maybe) {
+// ===== MATCH TIERS =====
+// Tier 1 (green):  2+ Available
+// Tier 2 (tan):    1 Available + 1+ Maybe
+// Tier 3 (purple): 2+ Maybe, 0 Available
+// 0 = no highlight (fewer than 2 people total, or just 1 person)
+function getTier(avail, maybe) {
   if (avail >= 2) return 1;
   if (avail === 1 && maybe >= 1) return 2;
   if (maybe >= 2) return 3;
-  if (avail === 1) return 4;
-  if (maybe >= 1) return 5;
   return 0;
 }
 
@@ -573,8 +570,8 @@ function renderOverview(){
         const short=name.length>6?name.substring(0,5)+'…':name;
         tags+=`<span class="ov-tag ${cls}">${short}</span>`;
       }
-      const lvl=getMatchLevel(ac,mc);
-      const lvlAttr=lvl>0?` data-lvl="${lvl}"`:'';
+      const tier=getTier(ac,mc);
+      const lvlAttr=tier>0?` data-lvl="${tier}"`:'';
       html+=`<td class="overview-cell${lunch?' lunch-hour':''}"${lvlAttr}><div class="ov-tags">${tags}</div></td>`;
       dayData[day][time]={ac,mc,ap,mp};
     }
@@ -592,8 +589,8 @@ function renderOverview(){
     if(!slots.length){ html+='<td class="summary-cell" style="color:var(--text-dim);font-style:italic;">—</td>'; continue; }
     html+='<td class="summary-cell">';
     for(const s of slots){
-      const lc=s.lvl<=1?'l1':s.lvl===2?'l2':s.lvl===3?'l3':'l4';
-      html+=`<span class="best-slot"><span class="sr ${lc}">${s.range}</span> <span class="sp">${s.who}</span>${s.hasHot?' <span class="hot-tag">(heat)</span>':''}</span>`;
+      const tc=s.tier===1?'t1':s.tier===2?'t2':'t3';
+      html+=`<span class="best-slot"><span class="tier-dot ${tc}"></span><span class="sr">${s.range}</span><span class="sdur">${s.dur}</span><span class="sp">${s.who}</span>${s.hasHot?' <span class="hot-tag">(heat)</span>':''}</span>`;
     }
     html+='</td>';
   }
@@ -605,26 +602,31 @@ function buildDaySummary(td){
   const chunks=[];let cur=null;
   for(let i=0;i<TIMES.length;i++){
     const t=TIMES[i],d=td[t]||{ac:0,mc:0,ap:[],mp:[]};
-    const lvl=getMatchLevel(d.ac,d.mc);
-    if(lvl>0&&lvl<=3){ // Only summarize lvl 1-3 matches
-      if(!cur) cur={si:i,times:[t],lvls:[lvl],people:new Set([...d.ap,...d.mp])};
-      else { cur.times.push(t);cur.lvls.push(lvl);d.ap.forEach(p=>cur.people.add(p));d.mp.forEach(p=>cur.people.add(p)); }
+    const tier=getTier(d.ac,d.mc);
+    if(tier>0){
+      if(!cur) cur={si:i,times:[t],tiers:[tier],people:new Set([...d.ap,...d.mp]),totalPeople:[d.ac+d.mc]};
+      else { cur.times.push(t);cur.tiers.push(tier);d.ap.forEach(p=>cur.people.add(p));d.mp.forEach(p=>cur.people.add(p));cur.totalPeople.push(d.ac+d.mc); }
     } else {
-      if(cur){chunks.push(finChunk(cur));cur=null;}
+      if(cur){if(cur.times.length>=2)chunks.push(finChunk(cur));cur=null;}
     }
   }
-  if(cur)chunks.push(finChunk(cur));
-  chunks.sort((a,b)=>a.lvl-b.lvl||b.times-a.times);
+  if(cur&&cur.times.length>=2)chunks.push(finChunk(cur));
+
+  // Sort: tier asc, then people count desc, then chronological
+  chunks.sort((a,b)=>a.tier-b.tier || b.avgPeople-a.avgPeople || a.si-b.si);
   return chunks;
 }
 
 function finChunk(c){
   const endIdx=c.si+c.times.length-1;
   const end=endIdx+1<TIMES.length?TIMES[endIdx+1]:'6:00 PM';
-  const bestLvl=Math.min(...c.lvls);
+  const bestTier=Math.min(...c.tiers);
   const hasHot=c.times.some(t=>isHotTime(t));
   const who=[...c.people].sort().join(', ');
-  return {range:`${c.times[0]}–${end}`,lvl:bestLvl,hasHot,who,times:c.times.length};
+  const hours=c.times.length*0.5;
+  const dur=hours===1?'1hr':hours%1===0?hours+'hr':hours+'hr';
+  const avgPeople=c.totalPeople.reduce((a,b)=>a+b,0)/c.totalPeople.length;
+  return {range:`${c.times[0]}–${end}`,tier:bestTier,hasHot,who,dur,avgPeople,si:c.si};
 }
 
 // ===== ADD MEMBER =====
