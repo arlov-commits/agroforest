@@ -70,10 +70,29 @@
   #app-screen { display: none; }
   header {
     display: flex; align-items: center; justify-content: space-between;
-    padding: 12px 16px; background: var(--surface); border-bottom: 1px solid var(--border);
-    position: sticky; top: 0; z-index: 100;
+    padding: 10px 16px; background: var(--surface); border-bottom: 1px solid var(--border);
+    position: sticky; top: 0; z-index: 100; flex-wrap: wrap; gap: 6px;
   }
-  header h2 { font-size: 1.1em; }
+  header h2 { font-size: 1.1em; white-space: nowrap; }
+  #header-controls {
+    display: flex; align-items: center; gap: 4px; flex-wrap: wrap; flex: 1; min-width: 0;
+    justify-content: flex-start; padding: 0 8px;
+  }
+  #header-controls .paint-btn {
+    padding: 4px 10px; font-size: 0.78em;
+  }
+  #header-controls .paint-label {
+    font-size: 0.75em; margin-right: 2px;
+  }
+  #header-controls .info-icon {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 14px; height: 14px; border-radius: 50%; border: 1px solid var(--border);
+    font-size: 0.6em; color: var(--text-dim); cursor: help; margin-left: -2px;
+    font-style: italic; font-family: Georgia, serif;
+  }
+  #header-controls .ro-label {
+    font-size: 0.78em; color: var(--text-dim); font-style: italic;
+  }
   .status-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; }
   .status-dot.live { background: var(--green); }
   .status-dot.offline { background: var(--red); }
@@ -112,10 +131,6 @@
   .tab.delete-tab { color: var(--red); }
   .tab.delete-tab:hover { color: var(--red); background: rgba(142,53,24,0.06); }
 
-  .paint-toolbar {
-    display: flex; gap: 6px; padding: 10px 16px; background: var(--surface);
-    border-bottom: 1px solid var(--border); flex-wrap: wrap; align-items: center;
-  }
   .paint-btn {
     padding: 6px 14px; border: 2px solid var(--border); border-radius: 6px;
     cursor: pointer; font-size: 0.85em; font-weight: 600; background: var(--surface2); color: var(--text-dim);
@@ -132,7 +147,6 @@
   .paint-btn[data-status="clear"].active { border-color: var(--text-dim); }
   .paint-btn[data-status="cycle"] { background: var(--surface2); color: var(--text); }
   .paint-btn[data-status="cycle"].active { border-color: var(--accent); color: var(--accent); }
-  .paint-label { color: var(--text-dim); font-size: 0.8em; margin-right: 4px; }
 
   .grid-container { overflow-x: auto; padding: 8px; -webkit-overflow-scrolling: touch; }
   table { border-collapse: collapse; width: 100%; min-width: 700px; user-select: none; -webkit-user-select: none; }
@@ -247,12 +261,12 @@
   }
 
   @media (max-width: 600px) {
-    .paint-toolbar { gap: 4px; padding: 8px 10px; }
-    .paint-btn { padding: 5px 10px; font-size: 0.8em; }
+    #header-controls .paint-btn { padding: 3px 7px; font-size: 0.72em; }
     th, td { font-size: 0.7em; }
     td.cell { min-width: 56px; height: 28px; }
     header h2 { font-size: 0.95em; }
     .header-right { gap: 4px; }
+    #header-controls { padding: 0 2px; }
   }
 </style>
 </head>
@@ -268,9 +282,10 @@
 
 <div id="app-screen">
   <header>
-    <h2>Team Scheduler <span id="ov-toggle-container"></span></h2>
+    <h2>Team Scheduler</h2>
+    <div id="header-controls"></div>
     <div class="header-right">
-      <span style="font-size:0.7em;color:var(--text-dim);opacity:0.5;">v2.0</span>
+      <span style="font-size:0.7em;color:var(--text-dim);opacity:0.5;">v2.1</span>
       <span><span class="status-dot" id="status-dot"></span><span id="status-text">Connecting...</span></span>
       <button class="btn-small" id="admin-toggle-btn" onclick="toggleAdmin()">Admin</button>
       <button class="btn-small" onclick="logout()">Switch User</button>
@@ -278,7 +293,6 @@
   </header>
   <div id="admin-bar-container"></div>
   <div class="tabs" id="tabs"></div>
-  <div id="paint-toolbar-container"></div>
   <div class="grid-container" id="grid-container"></div>
 </div>
 
@@ -466,15 +480,12 @@ function buildTabs(){
 function switchTab(tab){
   activeTab=tab;
   document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.tab===tab));
-  const toolbar=document.getElementById('paint-toolbar-container'),grid=document.getElementById('grid-container');
-  const toggleC=document.getElementById('ov-toggle-container');
-  if(tab!=='overview'&&toggleC) toggleC.innerHTML='';
+  const hc=document.getElementById('header-controls'),grid=document.getElementById('grid-container');
+  hc.innerHTML='';
   if(tab==='overview'){
-    toolbar.innerHTML='';
     renderOverview();
   }
   else if(tab==='add'){
-    toolbar.innerHTML='';
     grid.innerHTML=`<div class="add-panel"><h3 style="margin-bottom:16px;">Add Team Member</h3>
       <input type="text" id="new-member-name" placeholder="Name..." onkeydown="if(event.key==='Enter')addMember()">
       <button onclick="addMember()">Add</button></div>`;
@@ -482,15 +493,15 @@ function switchTab(tab){
     const isMe=tab===currentUser;
     const canEdit=isMe||(currentUser==='Art'&&isAdmin);
     if(canEdit){
-      const note=!isMe?' <span style="color:var(--orange);font-size:0.8em;">(editing as admin)</span>':'';
-      toolbar.innerHTML=`<div class="paint-toolbar"><span class="paint-label">Status:${note}</span>
-        <button class="paint-btn ${paintStatus==='cycle'?'active':''}" data-status="cycle" onclick="setPaint('cycle',this)" title="Click to cycle through Available → Maybe → Busy → Clear">↖ Toggle Status</button>
+      const note=!isMe?' <span style="color:var(--orange);font-size:0.72em;">(admin)</span>':'';
+      hc.innerHTML=`<span class="paint-label">Status:${note}</span>
+        <button class="paint-btn ${paintStatus==='cycle'?'active':''}" data-status="cycle" onclick="setPaint('cycle',this)" title="Click to cycle through Available → Maybe → Busy → Clear">↖ Toggle Status<span class="info-icon" title="Click to cycle through Available → Maybe → Busy → Clear">i</span></button>
         <button class="paint-btn ${paintStatus==='A'?'active':''}" data-status="A" onclick="setPaint('A',this)">✓ Available</button>
         <button class="paint-btn ${paintStatus==='M'?'active':''}" data-status="M" onclick="setPaint('M',this)">~ Maybe</button>
         <button class="paint-btn ${paintStatus==='B'?'active':''}" data-status="B" onclick="setPaint('B',this)">✗ Busy</button>
-        <button class="paint-btn ${paintStatus==='clear'?'active':''}" data-status="clear" onclick="setPaint('clear',this)">Eraser</button></div>`;
+        <button class="paint-btn ${paintStatus==='clear'?'active':''}" data-status="clear" onclick="setPaint('clear',this)">Eraser</button>`;
     } else {
-      toolbar.innerHTML=`<div class="paint-toolbar"><span class="paint-label" style="font-style:italic;">Viewing ${esc(tab)}'s schedule (read-only)</span></div>`;
+      hc.innerHTML=`<span class="ro-label">Viewing ${esc(tab)}'s schedule</span>`;
     }
     renderEditGrid(tab,canEdit);
   }
@@ -660,10 +671,10 @@ function renderOverview(){
   const canClick = !!currentUser && ovEditMode;
 
   // Toggle button in header
-  const toggleContainer = document.getElementById('ov-toggle-container');
-  if (toggleContainer) {
-    toggleContainer.innerHTML = currentUser
-      ? `<span class="ov-edit-toggle ${ovEditMode?'active':''}" onclick="toggleOvEdit()" title="Toggle to click cells and set your availability directly on the overview">↖ ${ovEditMode?'Editing':'Edit'}</span>`
+  const hc = document.getElementById('header-controls');
+  if (hc) {
+    hc.innerHTML = currentUser
+      ? `<span class="ov-edit-toggle ${ovEditMode?'active':''}" onclick="toggleOvEdit()" title="Toggle to click cells and set your availability directly on the overview">↖ ${ovEditMode?'Editing':'Edit'}<span class="info-icon" title="Click cells to set your availability. Cycles: Available → Maybe → Clear" style="margin-left:4px;${ovEditMode?'color:#fff;border-color:rgba(255,255,255,0.5);':''}">i</span></span>`
       : '';
   }
 
