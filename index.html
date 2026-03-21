@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Team Scheduler</title>
+<style>
+  :root {
+    --bg: #1a1a2e;
+    --surface: #16213e;
+    --surface2: #0f3460;
+    --text: #e0e0e0;
+    --text-dim: #8888aa;
+    --accent: #e94560;
+    --green: #4ecca3;
+    --yellow: #f0c040;
+    --orange: #e07020;
+    --red: #e94560;
+    --border: #2a2a4a;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  /* --- LOGIN SCREEN --- */
+  #login-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 20px;
+  }
+  #login-screen h1 { font-size: 2em; margin-bottom: 8px; }
+  #login-screen p { color: var(--text-dim); margin-bottom: 24px; }
+  #login-screen input {
+    padding: 12px 16px;
+    font-size: 1.1em;
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface);
+    color: var(--text);
+    width: 280px;
+    margin-bottom: 12px;
+    outline: none;
+  }
+  #login-screen input:focus { border-color: var(--accent); }
+  #login-screen button {
+    padding: 12px 32px;
+    font-size: 1.1em;
+    border: none;
+    border-radius: 8px;
+    background: var(--accent);
+    color: #fff;
+    cursor: pointer;
+    font-weight: 600;
+  }
+  #login-screen button:hover { opacity: 0.9; }
+  .existing-users { margin-top: 24px; text-align: center; }
+  .existing-users p { font-size: 0.9em; margin-bottom: 8px; }
+  .user-chip {
+    display: inline-block;
+    padding: 6px 14px;
+    margin: 4px;
+    border-radius: 20px;
+    background: var(--surface2);
+    cursor: pointer;
+    font-size: 0.9em;
+    border: 1px solid var(--border);
+    color: var(--text);
+  }
+  .user-chip:hover { border-color: var(--accent); background: var(--surface); }
+
+  /* --- APP SCREEN --- */
+  #app-screen { display: none; }
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  header h2 { font-size: 1.1em; }
+  .status-dot {
+    display: inline-block;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    margin-right: 6px;
+  }
+  .status-dot.live { background: var(--green); }
+  .status-dot.offline { background: var(--red); }
+  .header-right { display: flex; align-items: center; gap: 12px; font-size: 0.85em; }
+  .btn-small {
+    padding: 4px 12px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--surface2);
+    color: var(--text);
+    cursor: pointer;
+    font-size: 0.85em;
+  }
+  .btn-small:hover { border-color: var(--accent); }
+
+  /* --- TABS --- */
+  .tabs {
+    display: flex;
+    gap: 0;
+    padding: 0 8px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .tab {
+    padding: 10px 16px;
+    cursor: pointer;
+    font-size: 0.9em;
+    white-space: nowrap;
+    border-bottom: 2px solid transparent;
+    color: var(--text-dim);
+    background: none;
+    border-top: none; border-left: none; border-right: none;
+  }
+  .tab:hover { color: var(--text); }
+  .tab.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 600; }
+
+  /* --- PAINT TOOLBAR --- */
+  .paint-toolbar {
+    display: flex;
+    gap: 6px;
+    padding: 10px 16px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .paint-btn {
+    padding: 6px 14px;
+    border: 2px solid var(--border);
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.85em;
+    font-weight: 600;
+    background: var(--surface2);
+    color: var(--text);
+  }
+  .paint-btn.active { border-color: #fff; }
+  .paint-btn[data-status="A"] { background: #2d6a4f; color: #b7e4c7; }
+  .paint-btn[data-status="X"] { background: #7f5539; color: #ddb892; }
+  .paint-btn[data-status="P"] { background: #5a4a8a; color: #c8b6ff; }
+  .paint-btn[data-status="B"] { background: #6b2039; color: #ffb3c1; }
+  .paint-btn[data-status="clear"] { background: var(--surface); }
+  .paint-label { color: var(--text-dim); font-size: 0.8em; margin-right: 4px; }
+  .fill-all-btn {
+    margin-left: auto;
+    padding: 6px 12px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--surface2);
+    color: var(--text-dim);
+    cursor: pointer;
+    font-size: 0.8em;
+  }
+  .fill-all-btn:hover { border-color: var(--accent); color: var(--text); }
+
+  /* --- GRID --- */
+  .grid-container {
+    overflow-x: auto;
+    padding: 8px;
+    -webkit-overflow-scrolling: touch;
+  }
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    min-width: 700px;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  th, td {
+    border: 1px solid var(--border);
+    text-align: center;
+    font-size: 0.8em;
+  }
+  th {
+    background: var(--surface);
+    padding: 8px 4px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    font-weight: 600;
+  }
+  .time-col {
+    position: sticky;
+    left: 0;
+    z-index: 5;
+    background: var(--surface);
+    padding: 4px 8px;
+    white-space: nowrap;
+    font-weight: 500;
+    min-width: 70px;
+  }
+  /* Edit grid cells */
+  td.cell {
+    padding: 6px 2px;
+    cursor: pointer;
+    min-width: 72px;
+    height: 32px;
+    transition: background 0.1s;
+  }
+  td.cell:hover { filter: brightness(1.2); }
+  td.cell[data-val="A"] { background: #2d6a4f; color: #b7e4c7; }
+  td.cell[data-val="X"] { background: #7f5539; color: #ddb892; }
+  td.cell[data-val="P"] { background: #5a4a8a; color: #c8b6ff; }
+  td.cell[data-val="B"] { background: #6b2039; color: #ffb3c1; }
+
+  /* Overview cells */
+  td.overview-cell { padding: 3px 2px; min-width: 90px; vertical-align: top; }
+  .ov-tags { display: flex; flex-wrap: wrap; gap: 2px; justify-content: center; }
+  .ov-tag {
+    font-size: 0.7em;
+    padding: 1px 5px;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+  .ov-tag.avail { background: #2d6a4f; color: #b7e4c7; }
+  .ov-tag.flex  { background: #7f5539; color: #ddb892; }
+  .ov-tag.last  { background: #5a4a8a; color: #c8b6ff; }
+  td.highlight-good { background: rgba(78, 204, 163, 0.12); }
+
+  /* --- ADD MEMBER PANEL --- */
+  .add-panel {
+    padding: 24px;
+    text-align: center;
+  }
+  .add-panel input {
+    padding: 10px 14px;
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface);
+    color: var(--text);
+    font-size: 1em;
+    width: 220px;
+    margin-right: 8px;
+    outline: none;
+  }
+  .add-panel input:focus { border-color: var(--accent); }
+  .add-panel button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    background: var(--accent);
+    color: #fff;
+    cursor: pointer;
+    font-weight: 600;
+  }
+
+  /* --- RESPONSIVE --- */
+  @media (max-width: 600px) {
+    .paint-toolbar { gap: 4px; padding: 8px 10px; }
+    .paint-btn { padding: 5px 10px; font-size: 0.8em; }
+    th, td { font-size: 0.7em; }
+    td.cell { min-width: 56px; height: 28px; }
+    header h2 { font-size: 0.95em; }
+  }
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <h1>Team Scheduler</h1>
+  <p>Pick your name or type a new one</p>
+  <input type="text" id="name-input" placeholder="Your name..." autocomplete="off">
+  <button onclick="joinAs()">Join</button>
+  <div class="existing-users" id="existing-users"></div>
+</div>
+
+<!-- APP -->
+<div id="app-screen">
+  <header>
+    <h2>Team Scheduler</h2>
+    <div class="header-right">
+      <span><span class="status-dot" id="status-dot"></span><span id="status-text">Connecting...</span></span>
+      <button class="btn-small" onclick="logout()">Switch User</button>
+    </div>
+  </header>
+  <div class="tabs" id="tabs"></div>
+  <div id="paint-toolbar-container"></div>
+  <div class="grid-container" id="grid-container"></div>
+</div>
+
+<script>
+// ===== CONFIG =====
+const SUPABASE_URL = 'https://nxjypjgqsywxukcnchmh.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im54anlwamdxc3l3eHVrY25jaG1oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQxMTAzNzQsImV4cCI6MjA4OTY4NjM3NH0.Hh1GErLUxJbswFJGi8xVEzD60AUkRX0JVPgo91pdVKY';
+
+// Rolling 10-day window starting today, skipping Sundays
+const DAY_NAMES = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const MONTH_NAMES = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+function buildDays() {
+  const days = [];
+  const today = new Date();
+  let d = new Date(today);
+  while (days.length < 10) {
+    if (d.getDay() !== 0) { // skip Sunday
+      const label = `${DAY_NAMES[d.getDay()]} ${MONTH_NAMES[d.getMonth()]} ${d.getDate()}`;
+      days.push(label);
+    }
+    d.setDate(d.getDate() + 1);
+  }
+  return days;
+}
+const DAYS = buildDays();
+const TIMES = [];
+for (let h = 7; h < 18; h++) {
+  for (let m = 0; m < 60; m += 30) {
+    const hr = h > 12 ? h - 12 : h;
+    const ampm = h >= 12 ? 'PM' : 'AM';
+    const mm = m === 0 ? '00' : '30';
+    TIMES.push(`${hr}:${mm} ${ampm}`);
+  }
+}
+
+const STATUS_LABELS = { A: 'Available', X: 'Flexible', P: '🐼 Last Resort', B: '💢 Busy' };
+const STATUS_SHORT  = { A: '✓', X: '~', P: '🐼', B: '💢' };
+
+let currentUser = null;
+let allData = {};       // { name: { "Mon 1|7:00 AM": "A", ... } }
+let paintStatus = 'A';
+let isPainting = false;
+let activeTab = 'overview';
+let isOnline = false;
+
+// ===== SUPABASE REST HELPERS =====
+async function sbFetch(path, opts = {}) {
+  const url = `${SUPABASE_URL}/rest/v1/${path}`;
+  const headers = {
+    'apikey': SUPABASE_KEY,
+    'Authorization': `Bearer ${SUPABASE_KEY}`,
+    'Content-Type': 'application/json',
+    'Prefer': opts.prefer || ''
+  };
+  const res = await fetch(url, { ...opts, headers: { ...headers, ...opts.headers } });
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`Supabase ${res.status}: ${text}`);
+  }
+  if (res.status === 204) return null;
+  const ct = res.headers.get('content-type') || '';
+  if (ct.includes('json')) return res.json();
+  return null;
+}
+
+async function loadAllSchedules() {
+  try {
+    const rows = await sbFetch('schedules?select=*');
+    allData = {};
+    if (rows && Array.isArray(rows)) {
+      for (const row of rows) {
+        allData[row.name] = typeof row.data === 'string' ? JSON.parse(row.data) : row.data;
+      }
+    }
+    setOnline(true);
+    return true;
+  } catch (e) {
+    console.error('Load error:', e);
+    setOnline(false);
+    return false;
+  }
+}
+
+async function saveSchedule(name, data) {
+  try {
+    await sbFetch('schedules', {
+      method: 'POST',
+      prefer: 'resolution=merge-duplicates',
+      body: JSON.stringify({
+        id: name.toLowerCase().replace(/\s+/g, '-'),
+        name: name,
+        data: data,
+        updated_at: new Date().toISOString()
+      })
+    });
+    setOnline(true);
+  } catch (e) {
+    console.error('Save error:', e);
+    setOnline(false);
+  }
+}
+
+function setOnline(online) {
+  isOnline = online;
+  const dot = document.getElementById('status-dot');
+  const txt = document.getElementById('status-text');
+  if (dot) dot.className = 'status-dot ' + (online ? 'live' : 'offline');
+  if (txt) txt.textContent = online ? 'Live' : 'Offline';
+}
+
+// ===== POLLING =====
+let pollTimer = null;
+function startPolling() {
+  if (pollTimer) clearInterval(pollTimer);
+  pollTimer = setInterval(async () => {
+    await loadAllSchedules();
+    if (activeTab === 'overview') renderOverview();
+  }, 5000);
+}
+
+// ===== LOGIN =====
+async function initLogin() {
+  await loadAllSchedules();
+  const names = Object.keys(allData);
+  const container = document.getElementById('existing-users');
+  if (names.length > 0) {
+    container.innerHTML = '<p style="color:var(--text-dim);font-size:0.9em;">Or pick an existing name:</p>' +
+      names.map(n => `<span class="user-chip" onclick="pickUser('${n.replace(/'/g, "\\'")}')">${n}</span>`).join('');
+  }
+  // Check localStorage
+  const saved = localStorage.getItem('scheduler-user');
+  if (saved && allData[saved]) {
+    enterApp(saved);
+  }
+}
+
+function pickUser(name) {
+  document.getElementById('name-input').value = name;
+  joinAs();
+}
+
+function joinAs() {
+  const input = document.getElementById('name-input');
+  const name = input.value.trim();
+  if (!name) { input.focus(); return; }
+  if (!allData[name]) allData[name] = {};
+  enterApp(name);
+}
+
+function enterApp(name) {
+  currentUser = name;
+  localStorage.setItem('scheduler-user', name);
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app-screen').style.display = 'block';
+  buildTabs();
+  switchTab('overview');
+  startPolling();
+}
+
+function logout() {
+  localStorage.removeItem('scheduler-user');
+  currentUser = null;
+  if (pollTimer) clearInterval(pollTimer);
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('app-screen').style.display = 'none';
+  initLogin();
+}
+
+// ===== TABS =====
+function buildTabs() {
+  const tabs = document.getElementById('tabs');
+  const names = Object.keys(allData);
+  let html = `<button class="tab" data-tab="overview" onclick="switchTab('overview')">Overview</button>`;
+  // Put current user first
+  const sorted = [currentUser, ...names.filter(n => n !== currentUser)];
+  for (const name of sorted) {
+    const label = name === currentUser ? `${name} (You)` : name;
+    html += `<button class="tab" data-tab="${name}" onclick="switchTab('${name.replace(/'/g, "\\'")}')">${label}</button>`;
+  }
+  html += `<button class="tab" data-tab="add" onclick="switchTab('add')">+ Add</button>`;
+  tabs.innerHTML = html;
+}
+
+function switchTab(tab) {
+  activeTab = tab;
+  // Highlight tab
+  document.querySelectorAll('.tab').forEach(t => {
+    t.classList.toggle('active', t.dataset.tab === tab);
+  });
+  const toolbar = document.getElementById('paint-toolbar-container');
+  const grid = document.getElementById('grid-container');
+
+  if (tab === 'overview') {
+    toolbar.innerHTML = '';
+    renderOverview();
+  } else if (tab === 'add') {
+    toolbar.innerHTML = '';
+    grid.innerHTML = `
+      <div class="add-panel">
+        <h3 style="margin-bottom:16px;">Add Team Member</h3>
+        <input type="text" id="new-member-name" placeholder="Name...">
+        <button onclick="addMember()">Add</button>
+      </div>`;
+  } else {
+    // Person's edit grid
+    const isMe = tab === currentUser;
+    if (isMe) {
+      toolbar.innerHTML = `
+        <div class="paint-toolbar">
+          <span class="paint-label">Paint:</span>
+          <button class="paint-btn active" data-status="A" onclick="setPaint('A',this)">✓ Available</button>
+          <button class="paint-btn" data-status="X" onclick="setPaint('X',this)">~ Flexible</button>
+          <button class="paint-btn" data-status="P" onclick="setPaint('P',this)">🐼 Last Resort</button>
+          <button class="paint-btn" data-status="B" onclick="setPaint('B',this)">💢 Busy</button>
+          <button class="paint-btn" data-status="clear" onclick="setPaint('',this)">Clear</button>
+          <button class="fill-all-btn" onclick="fillAll()">Fill All "${STATUS_SHORT[paintStatus] || '?'}"</button>
+        </div>`;
+    } else {
+      toolbar.innerHTML = `<div class="paint-toolbar"><span class="paint-label" style="font-style:italic;">Viewing ${tab}'s schedule (read-only)</span></div>`;
+    }
+    renderEditGrid(tab, isMe);
+  }
+}
+
+// ===== PAINT =====
+function setPaint(status, btn) {
+  paintStatus = status;
+  document.querySelectorAll('.paint-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  // update fill-all label
+  const fab = document.querySelector('.fill-all-btn');
+  if (fab) fab.textContent = `Fill All "${STATUS_SHORT[paintStatus] || '—'}"`;
+}
+
+function fillAll() {
+  if (!currentUser || activeTab !== currentUser) return;
+  const data = allData[currentUser] || {};
+  for (const day of DAYS) {
+    for (const time of TIMES) {
+      const key = `${day}|${time}`;
+      if (paintStatus) data[key] = paintStatus;
+      else delete data[key];
+    }
+  }
+  allData[currentUser] = data;
+  renderEditGrid(currentUser, true);
+  saveSchedule(currentUser, data);
+}
+
+function cellAction(day, time) {
+  if (!currentUser || activeTab !== currentUser) return;
+  const data = allData[currentUser] || {};
+  const key = `${day}|${time}`;
+  if (paintStatus) data[key] = paintStatus;
+  else delete data[key];
+  allData[currentUser] = data;
+  // Update cell in DOM
+  const cell = document.querySelector(`td[data-key="${CSS.escape(key)}"]`);
+  if (cell) {
+    cell.setAttribute('data-val', data[key] || '');
+    cell.textContent = STATUS_SHORT[data[key]] || '';
+  }
+}
+
+let saveTimeout = null;
+function debounceSave() {
+  if (saveTimeout) clearTimeout(saveTimeout);
+  saveTimeout = setTimeout(() => {
+    if (currentUser && allData[currentUser]) {
+      saveSchedule(currentUser, allData[currentUser]);
+    }
+  }, 500);
+}
+
+// ===== EDIT GRID =====
+function renderEditGrid(name, editable) {
+  const data = allData[name] || {};
+  let html = '<table><thead><tr><th class="time-col">Time</th>';
+  for (const day of DAYS) html += `<th>${day}</th>`;
+  html += '</tr></thead><tbody>';
+
+  for (const time of TIMES) {
+    html += `<tr><td class="time-col">${time}</td>`;
+    for (const day of DAYS) {
+      const key = `${day}|${time}`;
+      const val = data[key] || '';
+      const label = STATUS_SHORT[val] || '';
+      html += `<td class="cell" data-key="${key}" data-val="${val}"
+        ${editable ? `
+          onmousedown="startPaint('${day}','${time}')"
+          onmouseenter="continuePaint('${day}','${time}')"
+          ontouchstart="startPaint('${day}','${time}')"
+          ontouchmove="handleTouchMove(event)"
+        ` : ''}>${label}</td>`;
+    }
+    html += '</tr>';
+  }
+  html += '</tbody></table>';
+  document.getElementById('grid-container').innerHTML = html;
+}
+
+function startPaint(day, time) {
+  isPainting = true;
+  cellAction(day, time);
+}
+function continuePaint(day, time) {
+  if (isPainting) cellAction(day, time);
+}
+document.addEventListener('mouseup', () => { if (isPainting) { isPainting = false; debounceSave(); } });
+document.addEventListener('touchend', () => { if (isPainting) { isPainting = false; debounceSave(); } });
+
+function handleTouchMove(e) {
+  if (!isPainting) return;
+  e.preventDefault();
+  const touch = e.touches[0];
+  const el = document.elementFromPoint(touch.clientX, touch.clientY);
+  if (el && el.classList.contains('cell') && el.dataset.key) {
+    const [day, time] = el.dataset.key.split('|');
+    cellAction(day, time);
+  }
+}
+
+// ===== OVERVIEW GRID =====
+function renderOverview() {
+  const names = Object.keys(allData);
+  let html = '<table><thead><tr><th class="time-col">Time</th>';
+  for (const day of DAYS) html += `<th>${day}</th>`;
+  html += '</tr></thead><tbody>';
+
+  for (const time of TIMES) {
+    html += `<tr><td class="time-col">${time}</td>`;
+    for (const day of DAYS) {
+      const key = `${day}|${time}`;
+      let availCount = 0;
+      let tags = '';
+      for (const name of names) {
+        const val = (allData[name] || {})[key];
+        if (!val || val === 'B') continue;
+        if (val === 'A') availCount++;
+        const cls = val === 'A' ? 'avail' : val === 'X' ? 'flex' : 'last';
+        const short = name.length > 6 ? name.substring(0, 5) + '…' : name;
+        tags += `<span class="ov-tag ${cls}">${short}</span>`;
+      }
+      const highlight = availCount >= 3 ? ' highlight-good' : '';
+      html += `<td class="overview-cell${highlight}"><div class="ov-tags">${tags}</div></td>`;
+    }
+    html += '</tr>';
+  }
+  html += '</tbody></table>';
+  document.getElementById('grid-container').innerHTML = html;
+}
+
+// ===== ADD MEMBER =====
+function addMember() {
+  const input = document.getElementById('new-member-name');
+  const name = input.value.trim();
+  if (!name) { input.focus(); return; }
+  if (allData[name]) { alert(name + ' already exists'); return; }
+  allData[name] = {};
+  saveSchedule(name, {});
+  buildTabs();
+  switchTab(name);
+}
+
+// ===== INIT =====
+initLogin();
+</script>
+</body>
+</html>
