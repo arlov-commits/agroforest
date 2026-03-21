@@ -6,19 +6,25 @@
 <title>Team Scheduler</title>
 <style>
   :root {
-    --bg: #1a1a2e;
-    --surface: #16213e;
-    --surface2: #0f3460;
-    --text: #e0e0e0;
-    --text-dim: #8888aa;
-    --accent: #e94560;
-    --green: #4ecca3;
-    --yellow: #f0c040;
-    --orange: #e07020;
-    --red: #e94560;
-    --border: #2a2a4a;
-    --maybe-bg: #5a4a1a;
-    --maybe-text: #f0d060;
+    --bg: #f5f0eb;
+    --surface: #ffffff;
+    --surface2: #ede8e2;
+    --text: #1a1714;
+    --text-dim: #8a8279;
+    --accent: #c0533a;
+    --accent-hover: #a8442e;
+    --green: #2d6a4f;
+    --green-bg: #d4e8d1;
+    --green-text: #1a4a32;
+    --yellow: #9a7b2f;
+    --yellow-bg: #f5ecd4;
+    --yellow-text: #6a5520;
+    --orange: #b85c1a;
+    --red: #a04520;
+    --red-bg: #f5ddd4;
+    --red-text: #6b2e18;
+    --border: #ddd6cd;
+    --border-strong: #c4bdb5;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
@@ -34,7 +40,7 @@
     display: flex; flex-direction: column; align-items: center; justify-content: center;
     min-height: 100vh; padding: 20px;
   }
-  #login-screen h1 { font-size: 2em; margin-bottom: 8px; }
+  #login-screen h1 { font-size: 2em; margin-bottom: 8px; color: var(--text); }
   #login-screen p { color: var(--text-dim); margin-bottom: 24px; }
   #login-screen input {
     padding: 12px 16px; font-size: 1.1em; border: 2px solid var(--border); border-radius: 8px;
@@ -45,15 +51,15 @@
     padding: 12px 32px; font-size: 1.1em; border: none; border-radius: 8px;
     background: var(--accent); color: #fff; cursor: pointer; font-weight: 600;
   }
-  #login-screen .join-btn:hover { opacity: 0.9; }
+  #login-screen .join-btn:hover { background: var(--accent-hover); }
   .existing-users { margin-top: 24px; text-align: center; }
-  .existing-users p { font-size: 0.9em; margin-bottom: 8px; }
+  .existing-users p { font-size: 0.9em; margin-bottom: 8px; color: var(--text-dim); }
   .user-chip {
     display: inline-block; padding: 6px 14px; margin: 4px; border-radius: 20px;
-    background: var(--surface2); cursor: pointer; font-size: 0.9em;
+    background: var(--surface); cursor: pointer; font-size: 0.9em;
     border: 1px solid var(--border); color: var(--text);
   }
-  .user-chip:hover { border-color: var(--accent); background: var(--surface); }
+  .user-chip:hover { border-color: var(--accent); background: var(--surface2); }
 
   /* --- APP --- */
   #app-screen { display: none; }
@@ -62,17 +68,17 @@
     padding: 12px 16px; background: var(--surface); border-bottom: 1px solid var(--border);
     position: sticky; top: 0; z-index: 100;
   }
-  header h2 { font-size: 1.1em; }
+  header h2 { font-size: 1.1em; color: var(--text); }
   .status-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; }
   .status-dot.live { background: var(--green); }
   .status-dot.offline { background: var(--red); }
   .header-right { display: flex; align-items: center; gap: 8px; font-size: 0.85em; flex-wrap: wrap; }
   .btn-small {
     padding: 4px 12px; border: 1px solid var(--border); border-radius: 6px;
-    background: var(--surface2); color: var(--text); cursor: pointer; font-size: 0.85em;
+    background: var(--surface); color: var(--text-dim); cursor: pointer; font-size: 0.85em;
   }
-  .btn-small:hover { border-color: var(--accent); }
-  .btn-small.admin-active { border-color: var(--yellow); color: var(--yellow); }
+  .btn-small:hover { border-color: var(--accent); color: var(--accent); }
+  .btn-small.admin-active { border-color: var(--orange); color: var(--orange); }
 
   /* --- TABS --- */
   .tabs {
@@ -83,13 +89,12 @@
   .tab {
     padding: 10px 16px; cursor: pointer; font-size: 0.9em; white-space: nowrap;
     border-bottom: 2px solid transparent; color: var(--text-dim);
-    background: none; border-top: none; border-left: none; border-right: none;
-    font-family: inherit;
+    background: none; border-top: none; border-left: none; border-right: none; font-family: inherit;
   }
   .tab:hover { color: var(--text); }
   .tab.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 600; }
   .tab.you-tab {
-    color: var(--green); font-weight: 700; background: rgba(78,204,163,0.08);
+    color: var(--green); font-weight: 700; background: rgba(45,106,79,0.06);
     border-bottom-color: var(--green);
   }
   .tab.you-tab.active { color: var(--green); border-bottom-color: var(--green); }
@@ -101,14 +106,18 @@
   }
   .paint-btn {
     padding: 6px 14px; border: 2px solid var(--border); border-radius: 6px;
-    cursor: pointer; font-size: 0.85em; font-weight: 600; background: var(--surface2); color: var(--text);
-    font-family: inherit;
+    cursor: pointer; font-size: 0.85em; font-weight: 600; background: var(--surface2); color: var(--text-dim);
+    font-family: inherit; transition: all 0.1s;
   }
-  .paint-btn.active { border-color: #fff; }
-  .paint-btn[data-status="A"] { background: #2d6a4f; color: #b7e4c7; }
-  .paint-btn[data-status="M"] { background: var(--maybe-bg); color: var(--maybe-text); }
-  .paint-btn[data-status="B"] { background: #6b2039; color: #ffb3c1; }
-  .paint-btn[data-status="clear"] { background: var(--surface); }
+  .paint-btn.active { border-color: var(--text); }
+  .paint-btn[data-status="A"] { background: var(--green-bg); color: var(--green-text); }
+  .paint-btn[data-status="A"].active { border-color: var(--green); }
+  .paint-btn[data-status="M"] { background: var(--yellow-bg); color: var(--yellow-text); }
+  .paint-btn[data-status="M"].active { border-color: var(--yellow); }
+  .paint-btn[data-status="B"] { background: var(--red-bg); color: var(--red-text); }
+  .paint-btn[data-status="B"].active { border-color: var(--red); }
+  .paint-btn[data-status="clear"] { background: var(--surface); color: var(--text-dim); }
+  .paint-btn[data-status="clear"].active { border-color: var(--text-dim); }
   .paint-label { color: var(--text-dim); font-size: 0.8em; margin-right: 4px; }
 
   /* --- GRID --- */
@@ -116,80 +125,90 @@
   table { border-collapse: collapse; width: 100%; min-width: 700px; user-select: none; -webkit-user-select: none; }
   th, td { border: 1px solid var(--border); text-align: center; font-size: 0.8em; }
   th {
-    background: var(--surface); padding: 8px 4px; position: sticky; top: 0; z-index: 10; font-weight: 600;
+    background: var(--surface2); padding: 8px 4px; position: sticky; top: 0; z-index: 10;
+    font-weight: 600; color: var(--text);
   }
   .time-col {
     position: sticky; left: 0; z-index: 5; background: var(--surface); padding: 4px 8px;
-    white-space: nowrap; font-weight: 500; min-width: 70px;
+    white-space: nowrap; font-weight: 500; min-width: 70px; color: var(--text-dim);
   }
-  .time-col.lunch-hour { background: #1e2a1e; }
-  th.lunch-col { }
+  .time-col.lunch-hour { background: #eae4d6; }
 
   td.cell {
     padding: 6px 2px; cursor: pointer; min-width: 72px; height: 32px; transition: background 0.1s;
-    touch-action: none;
+    touch-action: none; background: var(--surface);
   }
-  td.cell:hover { filter: brightness(1.2); }
-  td.cell[data-val="A"] { background: #2d6a4f; color: #b7e4c7; }
-  td.cell[data-val="M"] { background: var(--maybe-bg); color: var(--maybe-text); }
-  td.cell[data-val="B"] { background: #6b2039; color: #ffb3c1; }
-  td.cell.lunch-hour { border-left-color: #3a4a2a; border-right-color: #3a4a2a; }
-  td.cell.lunch-hour:not([data-val="A"]):not([data-val="M"]):not([data-val="B"]) { background: #1a2218; }
+  td.cell:hover { filter: brightness(0.96); }
+  td.cell[data-val="A"] { background: var(--green-bg); color: var(--green-text); }
+  td.cell[data-val="M"] { background: var(--yellow-bg); color: var(--yellow-text); }
+  td.cell[data-val="B"] { background: var(--red-bg); color: var(--red-text); }
+  td.cell.lunch-hour { border-left-color: #d5ccb8; border-right-color: #d5ccb8; }
+  td.cell.lunch-hour:not([data-val="A"]):not([data-val="M"]):not([data-val="B"]) { background: #f0ead8; }
 
   /* Overview */
-  td.overview-cell { padding: 3px 2px; min-width: 90px; vertical-align: top; }
-  td.overview-cell.lunch-hour:not(.highlight-good) { background: #1a2218; }
+  td.overview-cell { padding: 3px 2px; min-width: 90px; vertical-align: top; background: var(--surface); }
+  td.overview-cell.lunch-hour:not(.highlight-good) { background: #f0ead8; }
   .ov-tags { display: flex; flex-wrap: wrap; gap: 2px; justify-content: center; }
   .ov-tag { font-size: 0.7em; padding: 1px 5px; border-radius: 3px; white-space: nowrap; }
-  .ov-tag.avail { background: #2d6a4f; color: #b7e4c7; }
-  .ov-tag.maybe { background: var(--maybe-bg); color: var(--maybe-text); }
-  td.highlight-good { background: rgba(78, 204, 163, 0.12); }
+  .ov-tag.avail { background: var(--green-bg); color: var(--green-text); }
+  .ov-tag.maybe { background: var(--yellow-bg); color: var(--yellow-text); }
+  td.highlight-good { background: rgba(45,106,79,0.1); }
 
-  /* Summary */
-  .day-summary {
-    margin-top: 20px; padding: 16px; background: var(--surface); border-radius: 8px;
-    border: 1px solid var(--border);
+  /* Summary rows at bottom of overview table */
+  tr.summary-spacer td { height: 12px; border: none; background: transparent; }
+  tr.summary-header td {
+    background: var(--surface2); font-weight: 700; font-size: 0.78em; color: var(--text-dim);
+    padding: 6px 4px; border-color: var(--border-strong); text-transform: uppercase; letter-spacing: 0.04em;
   }
-  .day-summary h3 { font-size: 1em; margin-bottom: 12px; color: var(--green); }
-  .summary-day { margin-bottom: 14px; }
-  .summary-day-label { font-weight: 600; font-size: 0.9em; margin-bottom: 4px; color: var(--text); }
-  .summary-chunk {
-    display: inline-block; padding: 4px 10px; margin: 2px 4px 2px 0; border-radius: 6px; font-size: 0.82em;
+  td.summary-cell {
+    background: var(--surface); padding: 6px 4px; vertical-align: top;
+    font-size: 0.72em; line-height: 1.5; border-color: var(--border); text-align: left;
   }
-  .summary-chunk.peak { background: #2d6a4f; color: #b7e4c7; }
-  .summary-chunk.decent { background: #2a3a4f; color: #99bbdd; }
-  .summary-chunk.hot-hours { background: rgba(224,112,32,0.15); color: var(--orange); font-style: italic; font-size: 0.78em; }
-  .summary-none { color: var(--text-dim); font-size: 0.82em; font-style: italic; }
+  td.summary-cell .best-slot {
+    display: block; padding: 2px 0; color: var(--text);
+  }
+  td.summary-cell .best-slot .time-range {
+    font-weight: 600; color: var(--green-text);
+  }
+  td.summary-cell .best-slot .people-list {
+    color: var(--text-dim); font-size: 0.92em;
+  }
+  td.summary-cell .best-slot.hot-warning .time-range {
+    color: var(--orange);
+  }
+  td.summary-cell .best-slot.hot-warning::after {
+    content: ' (heat)'; color: var(--orange); font-style: italic; font-size: 0.9em;
+  }
 
   /* Admin */
   .admin-bar {
-    padding: 8px 16px; background: rgba(240,192,64,0.08); border-bottom: 1px solid rgba(240,192,64,0.2);
-    font-size: 0.82em; color: var(--yellow); display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    padding: 8px 16px; background: rgba(184,92,26,0.06); border-bottom: 1px solid rgba(184,92,26,0.15);
+    font-size: 0.82em; color: var(--orange); display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
   }
   .admin-bar .del-btn {
-    padding: 3px 10px; border: 1px solid rgba(240,192,64,0.3); border-radius: 5px;
-    background: transparent; color: var(--yellow); cursor: pointer; font-size: 0.85em; font-family: inherit;
+    padding: 3px 10px; border: 1px solid rgba(184,92,26,0.3); border-radius: 5px;
+    background: transparent; color: var(--orange); cursor: pointer; font-size: 0.85em; font-family: inherit;
   }
-  .admin-bar .del-btn:hover { background: rgba(240,192,64,0.15); }
+  .admin-bar .del-btn:hover { background: rgba(184,92,26,0.1); }
   .admin-bar .del-btn.danger { border-color: var(--red); color: var(--red); }
-  .admin-bar .del-btn.danger:hover { background: rgba(233,69,96,0.15); }
+  .admin-bar .del-btn.danger:hover { background: rgba(160,69,32,0.1); }
 
   /* Modal */
   .modal-bg {
-    position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex;
+    position: fixed; inset: 0; background: rgba(0,0,0,0.35); display: flex;
     align-items: center; justify-content: center; z-index: 500;
   }
   .modal {
     background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
-    padding: 24px; max-width: 380px; width: 90%;
+    padding: 24px; max-width: 380px; width: 90%; box-shadow: 0 8px 32px rgba(0,0,0,0.12);
   }
-  .modal h3 { margin-bottom: 12px; }
-  .modal input {
+  .modal h3 { margin-bottom: 12px; color: var(--text); }
+  .modal input, .modal select {
     width: 100%; padding: 10px 12px; border: 2px solid var(--border); border-radius: 8px;
     background: var(--bg); color: var(--text); font-size: 1em; margin-bottom: 12px; outline: none;
     font-family: inherit;
   }
-  .modal input:focus { border-color: var(--accent); }
+  .modal input:focus, .modal select:focus { border-color: var(--accent); }
   .modal-btns { display: flex; gap: 8px; justify-content: flex-end; }
   .modal-btns button {
     padding: 8px 18px; border: 1px solid var(--border); border-radius: 6px;
@@ -257,7 +276,6 @@
 const SUPABASE_URL = 'https://nxjypjgqsywxukcnchmh.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im54anlwamdxc3l3eHVrY25jaG1oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQxMTAzNzQsImV4cCI6MjA4OTY4NjM3NH0.Hh1GErLUxJbswFJGi8xVEzD60AUkRX0JVPgo91pdVKY';
 
-// Rolling 10-day window (including Sundays)
 const DAY_NAMES = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 const MONTH_NAMES = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 function buildDays() {
@@ -280,14 +298,14 @@ for (let h = 7; h < 18; h++) {
   }
 }
 
-function isLunchTime(time) {
-  return time.startsWith('11:00') || time.startsWith('11:30');
+function isLunchTime(time) { return time.startsWith('11:00') || time.startsWith('11:30'); }
+function isHotTime(time) {
+  const hot = ['1:00 PM','1:30 PM','2:00 PM','2:30 PM'];
+  return hot.includes(time);
 }
 
-// Statuses: A = Available, M = Maybe, B = Busy
-const CYCLE = ['A', 'M', 'B', ''];  // paint cycling order
+const CYCLE = ['A', 'M', 'B', ''];
 const STATUS_SHORT = { A: '✓', M: '~', B: '✗' };
-const STATUS_LABELS = { A: 'Available', M: 'Maybe', B: 'Busy' };
 
 let currentUser = null;
 let allData = {};
@@ -296,16 +314,15 @@ let isPainting = false;
 let activeTab = 'overview';
 let isOnline = false;
 let isAdmin = false;
-let admins = {};  // { name: hashedPassword }
+let admins = {};
+let dragPaintVal = null;
 
 // ===== SUPABASE REST =====
 async function sbFetch(path, opts = {}) {
   const url = `${SUPABASE_URL}/rest/v1/${path}`;
   const headers = {
-    'apikey': SUPABASE_KEY,
-    'Authorization': `Bearer ${SUPABASE_KEY}`,
-    'Content-Type': 'application/json',
-    'Prefer': opts.prefer || ''
+    'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`,
+    'Content-Type': 'application/json', 'Prefer': opts.prefer || ''
   };
   const res = await fetch(url, { ...opts, headers: { ...headers, ...opts.headers } });
   if (!res.ok) { const t = await res.text(); throw new Error(`Supabase ${res.status}: ${t}`); }
@@ -342,21 +359,17 @@ async function deleteSchedule(name) {
   } catch (e) { console.error('Delete:', e); }
 }
 
-// ===== ADMIN SYSTEM =====
+// ===== ADMIN =====
 async function loadAdmins() {
   try {
     const rows = await sbFetch('schedules?id=eq.__admins__&select=*');
     if (rows && rows.length > 0) {
       admins = typeof rows[0].data === 'string' ? JSON.parse(rows[0].data) : rows[0].data;
     } else {
-      // Initialize with default admin
       admins = { Art: hashPw('amitofo108') };
       await saveAdmins();
     }
-  } catch (e) {
-    console.error('Admin load:', e);
-    admins = { Art: hashPw('amitofo108') };
-  }
+  } catch (e) { console.error('Admin load:', e); admins = { Art: hashPw('amitofo108') }; }
 }
 
 async function saveAdmins() {
@@ -369,42 +382,26 @@ async function saveAdmins() {
 }
 
 function hashPw(pw) {
-  // Simple hash for client-side — not crypto-grade but sufficient for team tool
   let h = 0;
-  for (let i = 0; i < pw.length; i++) { h = ((h << 5) - h + pw.charCodeAt(i)) | 0; }
+  for (let i = 0; i < pw.length; i++) h = ((h << 5) - h + pw.charCodeAt(i)) | 0;
   return 'h' + Math.abs(h).toString(36);
 }
 
 function toggleAdmin() {
-  if (isAdmin) {
-    isAdmin = false;
-    updateAdminUI();
-    return;
-  }
-  showModal(`
-    <h3>Admin Login</h3>
-    <p class="info-msg">Enter your admin password. If you're "${esc(currentUser)}" and have admin access, this will unlock admin features.</p>
+  if (isAdmin) { isAdmin = false; updateAdminUI(); return; }
+  showModal(`<h3>Admin Login</h3>
+    <p class="info-msg">Enter your admin password.</p>
     <input type="password" id="admin-pw" placeholder="Password..." onkeydown="if(event.key==='Enter')confirmAdmin()">
     <div id="admin-error"></div>
-    <div class="modal-btns">
-      <button onclick="closeModal()">Cancel</button>
-      <button class="primary" onclick="confirmAdmin()">Login</button>
-    </div>
-  `);
+    <div class="modal-btns"><button onclick="closeModal()">Cancel</button><button class="primary" onclick="confirmAdmin()">Login</button></div>`);
   setTimeout(() => { const el = document.getElementById('admin-pw'); if (el) el.focus(); }, 100);
 }
 
 function confirmAdmin() {
   const pw = document.getElementById('admin-pw').value;
   if (!pw) return;
-  const hashed = hashPw(pw);
-  if (admins[currentUser] === hashed) {
-    isAdmin = true;
-    closeModal();
-    updateAdminUI();
-  } else {
-    document.getElementById('admin-error').innerHTML = '<p class="error-msg">Wrong password.</p>';
-  }
+  if (admins[currentUser] === hashPw(pw)) { isAdmin = true; closeModal(); updateAdminUI(); }
+  else document.getElementById('admin-error').innerHTML = '<p class="error-msg">Wrong password.</p>';
 }
 
 function updateAdminUI() {
@@ -417,96 +414,59 @@ function renderAdminBar() {
   const c = document.getElementById('admin-bar-container');
   if (!isAdmin) { c.innerHTML = ''; return; }
   const names = Object.keys(allData).filter(n => n !== '__admins__');
-  let html = '<div class="admin-bar"><span>Admin mode:</span>';
-  names.forEach(n => {
-    html += `<button class="del-btn danger" onclick="adminDeleteUser('${esc(n)}')">Delete ${esc(n)}</button>`;
-  });
+  let html = '<div class="admin-bar"><span>Admin:</span>';
+  names.forEach(n => { html += `<button class="del-btn danger" onclick="adminDeleteUser('${esc(n)}')">Delete ${esc(n)}</button>`; });
   html += `<button class="del-btn" onclick="showPromoteAdmin()">+ Make Admin</button>`;
-  html += `<button class="del-btn" onclick="showChangePassword()">Change My Password</button>`;
-  html += '</div>';
+  html += `<button class="del-btn" onclick="showChangePassword()">Change Password</button></div>`;
   c.innerHTML = html;
 }
 
 function adminDeleteUser(name) {
-  if (!isAdmin) return;
-  if (!confirm(`Delete ${name} and all their data?`)) return;
+  if (!isAdmin || !confirm(`Delete ${name} and all their data?`)) return;
   deleteSchedule(name);
   if (admins[name]) { delete admins[name]; saveAdmins(); }
-  buildTabs();
-  switchTab('overview');
-  renderAdminBar();
+  buildTabs(); switchTab('overview'); renderAdminBar();
 }
 
 function showPromoteAdmin() {
   const names = Object.keys(allData).filter(n => n !== '__admins__' && !admins[n]);
-  if (names.length === 0) { alert('All users are already admins.'); return; }
-  showModal(`
-    <h3>Make Someone Admin</h3>
-    <p class="info-msg">Pick a user and set their admin password. They'll use this password to access admin mode.</p>
-    <select id="promote-select" style="width:100%;padding:10px;border:2px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text);margin-bottom:12px;font-size:1em;">
-      ${names.map(n => `<option value="${esc(n)}">${esc(n)}</option>`).join('')}
-    </select>
+  if (!names.length) { alert('All users are already admins.'); return; }
+  showModal(`<h3>Make Someone Admin</h3>
+    <p class="info-msg">Pick a user and set their admin password.</p>
+    <select id="promote-select">${names.map(n => `<option value="${esc(n)}">${esc(n)}</option>`).join('')}</select>
     <input type="password" id="promote-pw" placeholder="Set their password...">
     <div id="promote-error"></div>
-    <div class="modal-btns">
-      <button onclick="closeModal()">Cancel</button>
-      <button class="primary" onclick="confirmPromote()">Make Admin</button>
-    </div>
-  `);
+    <div class="modal-btns"><button onclick="closeModal()">Cancel</button><button class="primary" onclick="confirmPromote()">Make Admin</button></div>`);
 }
 
 function confirmPromote() {
   const name = document.getElementById('promote-select').value;
   const pw = document.getElementById('promote-pw').value;
-  if (!pw || pw.length < 3) {
-    document.getElementById('promote-error').innerHTML = '<p class="error-msg">Password must be at least 3 characters.</p>';
-    return;
-  }
-  admins[name] = hashPw(pw);
-  saveAdmins();
-  closeModal();
-  renderAdminBar();
-  alert(`${name} is now an admin.`);
+  if (!pw || pw.length < 3) { document.getElementById('promote-error').innerHTML = '<p class="error-msg">Min 3 characters.</p>'; return; }
+  admins[name] = hashPw(pw); saveAdmins(); closeModal(); renderAdminBar(); alert(`${name} is now an admin.`);
 }
 
 function showChangePassword() {
-  showModal(`
-    <h3>Change Your Admin Password</h3>
-    <input type="password" id="new-pw" placeholder="New password..." onkeydown="if(event.key==='Enter')confirmChangePw()">
-    <input type="password" id="new-pw2" placeholder="Confirm new password...">
+  showModal(`<h3>Change Your Admin Password</h3>
+    <input type="password" id="new-pw" placeholder="New password..." onkeydown="if(event.key==='Enter')document.getElementById('new-pw2').focus()">
+    <input type="password" id="new-pw2" placeholder="Confirm..." onkeydown="if(event.key==='Enter')confirmChangePw()">
     <div id="pw-error"></div>
-    <div class="modal-btns">
-      <button onclick="closeModal()">Cancel</button>
-      <button class="primary" onclick="confirmChangePw()">Change</button>
-    </div>
-  `);
+    <div class="modal-btns"><button onclick="closeModal()">Cancel</button><button class="primary" onclick="confirmChangePw()">Change</button></div>`);
   setTimeout(() => { const el = document.getElementById('new-pw'); if (el) el.focus(); }, 100);
 }
 
 function confirmChangePw() {
-  const pw1 = document.getElementById('new-pw').value;
-  const pw2 = document.getElementById('new-pw2').value;
-  if (!pw1 || pw1.length < 3) {
-    document.getElementById('pw-error').innerHTML = '<p class="error-msg">Password must be at least 3 characters.</p>';
-    return;
-  }
-  if (pw1 !== pw2) {
-    document.getElementById('pw-error').innerHTML = '<p class="error-msg">Passwords don\'t match.</p>';
-    return;
-  }
-  admins[currentUser] = hashPw(pw1);
-  saveAdmins();
-  closeModal();
-  alert('Password changed.');
+  const p1 = document.getElementById('new-pw').value, p2 = document.getElementById('new-pw2').value;
+  if (!p1 || p1.length < 3) { document.getElementById('pw-error').innerHTML = '<p class="error-msg">Min 3 characters.</p>'; return; }
+  if (p1 !== p2) { document.getElementById('pw-error').innerHTML = '<p class="error-msg">Passwords don\'t match.</p>'; return; }
+  admins[currentUser] = hashPw(p1); saveAdmins(); closeModal(); alert('Password changed.');
 }
 
 // ===== MODAL =====
-function showModal(html) {
-  document.getElementById('modal-container').innerHTML = `<div class="modal-bg" onclick="if(event.target===this)closeModal()"><div class="modal">${html}</div></div>`;
-}
+function showModal(html) { document.getElementById('modal-container').innerHTML = `<div class="modal-bg" onclick="if(event.target===this)closeModal()"><div class="modal">${html}</div></div>`; }
 function closeModal() { document.getElementById('modal-container').innerHTML = ''; }
 
-// ===== ONLINE STATUS =====
+// ===== STATUS =====
 function setOnline(online) {
   isOnline = online;
   const dot = document.getElementById('status-dot');
@@ -532,17 +492,14 @@ async function initLogin() {
   const names = Object.keys(allData).filter(n => n !== '__admins__');
   const container = document.getElementById('existing-users');
   if (names.length > 0) {
-    container.innerHTML = '<p style="color:var(--text-dim);font-size:0.9em;">Or pick an existing name:</p>' +
+    container.innerHTML = '<p>Or pick an existing name:</p>' +
       names.map(n => `<span class="user-chip" onclick="pickUser('${esc(n)}')">${esc(n)}</span>`).join('');
   }
   const saved = localStorage.getItem('scheduler-user');
   if (saved && allData[saved]) enterApp(saved);
 }
 
-function pickUser(name) {
-  document.getElementById('name-input').value = name;
-  joinAs();
-}
+function pickUser(name) { document.getElementById('name-input').value = name; joinAs(); }
 
 function joinAs() {
   const input = document.getElementById('name-input');
@@ -557,11 +514,7 @@ function enterApp(name) {
   localStorage.setItem('scheduler-user', name);
   document.getElementById('login-screen').style.display = 'none';
   document.getElementById('app-screen').style.display = 'block';
-  isAdmin = false;
-  updateAdminUI();
-  buildTabs();
-  switchTab(name);  // Go to your own tab first
-  startPolling();
+  isAdmin = false; updateAdminUI(); buildTabs(); switchTab(name); startPolling();
 }
 
 function logout() {
@@ -579,28 +532,19 @@ function buildTabs() {
   const tabs = document.getElementById('tabs');
   const names = Object.keys(allData).filter(n => n !== '__admins__');
   let html = `<button class="tab" data-tab="overview" onclick="switchTab('overview')">Overview</button>`;
-  // Current user tab right after Overview
   if (currentUser && names.includes(currentUser)) {
     html += `<button class="tab you-tab" data-tab="${esc(currentUser)}" onclick="switchTab('${esc(currentUser)}')">${esc(currentUser)} ★</button>`;
   }
-  const others = names.filter(n => n !== currentUser).sort();
-  for (const name of others) {
+  names.filter(n => n !== currentUser).sort().forEach(name => {
     html += `<button class="tab" data-tab="${esc(name)}" onclick="switchTab('${esc(name)}')">${esc(name)}</button>`;
-  }
+  });
   html += `<button class="tab" data-tab="add" onclick="switchTab('add')">+ Add</button>`;
   tabs.innerHTML = html;
 }
 
 function switchTab(tab) {
   activeTab = tab;
-  document.querySelectorAll('.tab').forEach(t => {
-    const isYou = t.classList.contains('you-tab');
-    if (isYou) {
-      t.classList.toggle('active', t.dataset.tab === tab);
-    } else {
-      t.classList.toggle('active', t.dataset.tab === tab);
-    }
-  });
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
   const toolbar = document.getElementById('paint-toolbar-container');
   const grid = document.getElementById('grid-container');
 
@@ -636,73 +580,16 @@ function setPaint(status, btn) {
   if (btn) btn.classList.add('active');
 }
 
-function getNextCycle(currentVal) {
-  const idx = CYCLE.indexOf(currentVal || '');
-  return CYCLE[(idx + 1) % CYCLE.length];
-}
-
-function cellAction(day, time, cycling) {
-  if (!currentUser || activeTab !== currentUser) return;
-  const data = allData[currentUser] || {};
-  const key = `${day}|${time}`;
-
-  let newVal;
-  if (cycling) {
-    // First paint in a drag uses paintStatus, subsequent cells also use it
-    newVal = paintStatus;
-  } else {
-    newVal = paintStatus;
-  }
-
-  if (newVal) data[key] = newVal;
-  else delete data[key];
-  allData[currentUser] = data;
-
-  const cell = document.querySelector(`td[data-key="${CSS.escape(key)}"]`);
-  if (cell) {
-    cell.setAttribute('data-val', data[key] || '');
-    cell.textContent = STATUS_SHORT[data[key]] || '';
-  }
-}
-
-function cellCycleAction(day, time) {
-  if (!currentUser || activeTab !== currentUser) return;
-  const data = allData[currentUser] || {};
-  const key = `${day}|${time}`;
-  const current = data[key] || '';
-
-  // If current matches paintStatus, cycle to next. Otherwise set to paintStatus.
-  let newVal;
-  if (current === paintStatus || (current === '' && paintStatus === '')) {
-    newVal = getNextCycle(current);
-  } else {
-    newVal = paintStatus;
-  }
-
-  if (newVal) data[key] = newVal;
-  else delete data[key];
-  allData[currentUser] = data;
-
-  const cell = document.querySelector(`td[data-key="${CSS.escape(key)}"]`);
-  if (cell) {
-    cell.setAttribute('data-val', data[key] || '');
-    cell.textContent = STATUS_SHORT[data[key]] || '';
-  }
-}
-
-let dragPaintVal = null;
-
 function startPaint(day, time) {
+  if (!currentUser || activeTab !== currentUser) return;
   isPainting = true;
-  // On first click: cycle behavior
   const data = allData[currentUser] || {};
   const key = `${day}|${time}`;
   const current = data[key] || '';
 
-  // If cell already matches paint mode, cycle forward
+  // Cycling: if cell already matches paint mode, cycle to next status
   if (current === paintStatus || (current === '' && paintStatus === '')) {
-    const next = getNextCycle(current);
-    dragPaintVal = next;
+    dragPaintVal = CYCLE[(CYCLE.indexOf(current) + 1) % CYCLE.length];
   } else {
     dragPaintVal = paintStatus;
   }
@@ -710,35 +597,28 @@ function startPaint(day, time) {
   if (dragPaintVal) data[key] = dragPaintVal;
   else delete data[key];
   allData[currentUser] = data;
-
-  const cell = document.querySelector(`td[data-key="${CSS.escape(key)}"]`);
-  if (cell) {
-    cell.setAttribute('data-val', data[key] || '');
-    cell.textContent = STATUS_SHORT[data[key]] || '';
-  }
+  updateCell(key, data[key]);
 }
 
 function continuePaint(day, time) {
-  if (!isPainting || dragPaintVal === null) return;
+  if (!isPainting || dragPaintVal === null || !currentUser) return;
   const data = allData[currentUser] || {};
   const key = `${day}|${time}`;
   if (dragPaintVal) data[key] = dragPaintVal;
   else delete data[key];
   allData[currentUser] = data;
+  updateCell(key, data[key]);
+}
 
+function updateCell(key, val) {
   const cell = document.querySelector(`td[data-key="${CSS.escape(key)}"]`);
-  if (cell) {
-    cell.setAttribute('data-val', data[key] || '');
-    cell.textContent = STATUS_SHORT[data[key]] || '';
-  }
+  if (cell) { cell.setAttribute('data-val', val || ''); cell.textContent = STATUS_SHORT[val] || ''; }
 }
 
 let saveTimeout = null;
 function debounceSave() {
   if (saveTimeout) clearTimeout(saveTimeout);
-  saveTimeout = setTimeout(() => {
-    if (currentUser && allData[currentUser]) saveSchedule(currentUser, allData[currentUser]);
-  }, 500);
+  saveTimeout = setTimeout(() => { if (currentUser && allData[currentUser]) saveSchedule(currentUser, allData[currentUser]); }, 500);
 }
 
 document.addEventListener('mouseup', () => { if (isPainting) { isPainting = false; dragPaintVal = null; debounceSave(); } });
@@ -750,14 +630,9 @@ function handleTouchMove(e) {
   const touch = e.touches[0];
   const el = document.elementFromPoint(touch.clientX, touch.clientY);
   if (el && el.classList.contains('cell') && el.dataset.key) {
-    const [day, time] = splitKey(el.dataset.key);
-    continuePaint(day, time);
+    const i = el.dataset.key.lastIndexOf('|');
+    continuePaint(el.dataset.key.substring(0, i), el.dataset.key.substring(i + 1));
   }
-}
-
-function splitKey(key) {
-  const i = key.lastIndexOf('|');
-  return [key.substring(0, i), key.substring(i + 1)];
 }
 
 // ===== EDIT GRID =====
@@ -766,21 +641,14 @@ function renderEditGrid(name, editable) {
   let html = '<table><thead><tr><th class="time-col">Time</th>';
   for (const day of DAYS) html += `<th>${day}</th>`;
   html += '</tr></thead><tbody>';
-
   for (const time of TIMES) {
     const lunch = isLunchTime(time);
     html += `<tr><td class="time-col${lunch ? ' lunch-hour' : ''}">${time}</td>`;
     for (const day of DAYS) {
       const key = `${day}|${time}`;
       const val = data[key] || '';
-      const label = STATUS_SHORT[val] || '';
       html += `<td class="cell${lunch ? ' lunch-hour' : ''}" data-key="${key}" data-val="${val}"
-        ${editable ? `
-          onmousedown="startPaint('${esc(day)}','${time}')"
-          onmouseenter="continuePaint('${esc(day)}','${time}')"
-          ontouchstart="startPaint('${esc(day)}','${time}')"
-          ontouchmove="handleTouchMove(event)"
-        ` : ''}>${label}</td>`;
+        ${editable ? `onmousedown="startPaint('${esc(day)}','${time}')" onmouseenter="continuePaint('${esc(day)}','${time}')" ontouchstart="startPaint('${esc(day)}','${time}')" ontouchmove="handleTouchMove(event)"` : ''}>${STATUS_SHORT[val] || ''}</td>`;
     }
     html += '</tr>';
   }
@@ -795,9 +663,9 @@ function renderOverview() {
   for (const day of DAYS) html += `<th>${day}</th>`;
   html += '</tr></thead><tbody>';
 
-  // Build score map for summary
-  const dayScores = {};
-  for (const day of DAYS) dayScores[day] = {};
+  // Track per-day, per-time data for summary
+  const dayData = {};
+  for (const day of DAYS) dayData[day] = {};
 
   for (const time of TIMES) {
     const lunch = isLunchTime(time);
@@ -806,100 +674,85 @@ function renderOverview() {
       const key = `${day}|${time}`;
       let availCount = 0;
       let tags = '';
+      const availPeople = [];
       for (const name of names) {
         const val = (allData[name] || {})[key];
         if (!val || val === 'B') continue;
-        if (val === 'A') availCount++;
+        if (val === 'A') { availCount++; availPeople.push(name); }
         const cls = val === 'A' ? 'avail' : 'maybe';
         const short = name.length > 6 ? name.substring(0, 5) + '…' : name;
         tags += `<span class="ov-tag ${cls}">${short}</span>`;
       }
       const highlight = availCount >= 2 ? ' highlight-good' : '';
       html += `<td class="overview-cell${lunch ? ' lunch-hour' : ''}${highlight}"><div class="ov-tags">${tags}</div></td>`;
-      dayScores[day][time] = availCount;
+      dayData[day][time] = { count: availCount, people: availPeople };
     }
     html += '</tr>';
   }
+
+  // Summary rows at bottom of table
+  html += '<tr class="summary-spacer"><td colspan="' + (DAYS.length + 1) + '"></td></tr>';
+  html += '<tr class="summary-header"><td class="time-col" style="background:var(--surface2);">Best Times</td>';
+  for (const day of DAYS) html += '<td style="background:var(--surface2);">' + day.split(' ')[0] + '</td>';
+  html += '</tr>';
+
+  // Build summary per day
+  html += '<tr><td class="time-col" style="background:var(--surface);"></td>';
+  for (const day of DAYS) {
+    const bestSlots = buildDaySummary(dayData[day]);
+    if (bestSlots.length === 0) {
+      html += '<td class="summary-cell" style="color:var(--text-dim);font-style:italic;">—</td>';
+    } else {
+      html += '<td class="summary-cell">';
+      for (const slot of bestSlots) {
+        const hotClass = slot.hasHot ? ' hot-warning' : '';
+        html += `<span class="best-slot${hotClass}"><span class="time-range">${slot.range}</span> <span class="people-list">${slot.count}× ${slot.people}</span></span>`;
+      }
+      html += '</td>';
+    }
+  }
+  html += '</tr>';
+
   html += '</tbody></table>';
-
-  // Build summary
-  html += buildSummary(dayScores);
-
   document.getElementById('grid-container').innerHTML = html;
 }
 
-function buildSummary(dayScores) {
-  let html = '<div class="day-summary"><h3>Suggested Best Hours</h3>';
-
-  for (const day of DAYS) {
-    const scores = dayScores[day];
-    // Find chunks of 2+ green availability
-    const chunks = findChunks(scores, 2);
-    if (chunks.length === 0) {
-      html += `<div class="summary-day"><div class="summary-day-label">${day}</div><span class="summary-none">No strong overlap yet</span></div>`;
-      continue;
-    }
-
-    html += `<div class="summary-day"><div class="summary-day-label">${day}</div>`;
-    for (const chunk of chunks) {
-      const isHot = isHotHours(chunk.start, chunk.end);
-      const peakClass = chunk.avgScore >= 3 ? 'peak' : 'decent';
-      html += `<span class="summary-chunk ${peakClass}">${chunk.start} – ${chunk.end} (${chunk.avgScore.toFixed(0)}+ avail)</span>`;
-      if (isHot) html += `<span class="summary-chunk hot-hours">⚠ high heat hours</span>`;
-    }
-    html += '</div>';
-  }
-
-  html += '</div>';
-  return html;
-}
-
-function findChunks(scores, minScore) {
+function buildDaySummary(timeData) {
+  // Find contiguous chunks where 2+ people are available
   const chunks = [];
   let current = null;
 
   for (let i = 0; i < TIMES.length; i++) {
     const time = TIMES[i];
-    const score = scores[time] || 0;
-    if (score >= minScore) {
+    const d = timeData[time] || { count: 0, people: [] };
+    if (d.count >= 2) {
       if (!current) {
-        current = { startIdx: i, start: time, scores: [score] };
+        current = { startIdx: i, times: [time], counts: [d.count], allPeople: new Set(d.people) };
       } else {
-        current.scores.push(score);
+        current.times.push(time);
+        current.counts.push(d.count);
+        d.people.forEach(p => current.allPeople.add(p));
       }
     } else {
-      if (current) {
-        current.end = TIMES[current.startIdx + current.scores.length - 1];
-        // Extend end time by 30min to show end of slot
-        const lastIdx = current.startIdx + current.scores.length - 1;
-        if (lastIdx + 1 < TIMES.length) current.end = TIMES[lastIdx + 1];
-        else current.end = '6:00 PM';
-        current.avgScore = current.scores.reduce((a, b) => a + b, 0) / current.scores.length;
-        chunks.push(current);
-        current = null;
-      }
+      if (current) { chunks.push(finalizeChunk(current)); current = null; }
     }
   }
-  if (current) {
-    const lastIdx = current.startIdx + current.scores.length - 1;
-    if (lastIdx + 1 < TIMES.length) current.end = TIMES[lastIdx + 1];
-    else current.end = '6:00 PM';
-    current.avgScore = current.scores.reduce((a, b) => a + b, 0) / current.scores.length;
-    chunks.push(current);
-  }
+  if (current) chunks.push(finalizeChunk(current));
 
+  // Sort by avg count descending
+  chunks.sort((a, b) => b.avgCount - a.avgCount);
   return chunks;
 }
 
-function isHotHours(startTime, endTime) {
-  // 1:00 PM to 3:00 PM are hot hours
-  const hotStart = TIMES.indexOf('1:00 PM');
-  const hotEnd = TIMES.indexOf('3:00 PM');
-  const chunkStart = TIMES.indexOf(startTime);
-  const chunkEnd = TIMES.indexOf(endTime);
-  if (chunkStart === -1 || hotStart === -1) return false;
-  // Check if any part of chunk overlaps hot hours
-  return chunkStart <= hotEnd && chunkEnd >= hotStart;
+function finalizeChunk(c) {
+  const startTime = c.times[0];
+  // End time: 30 min after last slot
+  const lastIdx = c.startIdx + c.times.length - 1;
+  const endTime = lastIdx + 1 < TIMES.length ? TIMES[lastIdx + 1] : '6:00 PM';
+  const avgCount = c.counts.reduce((a, b) => a + b, 0) / c.counts.length;
+  const hasHot = c.times.some(t => isHotTime(t));
+  const people = [...c.allPeople].sort().join(', ');
+  return { range: `${startTime}–${endTime}`, count: Math.round(avgCount), people, hasHot, avgCount };
 }
 
 // ===== ADD MEMBER =====
@@ -910,8 +763,7 @@ function addMember() {
   if (allData[name]) { alert(name + ' already exists'); return; }
   allData[name] = {};
   saveSchedule(name, {});
-  buildTabs();
-  switchTab(name);
+  buildTabs(); switchTab(name);
 }
 
 // ===== HELPERS =====
