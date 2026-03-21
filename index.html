@@ -118,6 +118,8 @@
   .paint-btn[data-status="B"].active { border-color: var(--red); }
   .paint-btn[data-status="clear"] { background: var(--surface); color: var(--text-dim); }
   .paint-btn[data-status="clear"].active { border-color: var(--text-dim); }
+  .paint-btn[data-status="cycle"] { background: var(--surface2); color: var(--text); }
+  .paint-btn[data-status="cycle"].active { border-color: var(--accent); color: var(--accent); }
   .paint-label { color: var(--text-dim); font-size: 0.8em; margin-right: 4px; }
 
   /* --- GRID --- */
@@ -258,8 +260,8 @@
   <header>
     <h2>Team Scheduler</h2>
     <div class="header-right">
+      <span style="font-size:0.7em;color:var(--text-dim);opacity:0.5;">v1.4</span>
       <span><span class="status-dot" id="status-dot"></span><span id="status-text">Connecting...</span></span>
-      <span style="font-size:0.7em;color:var(--text-dim);opacity:0.5;">v1.3</span>
       <button class="btn-small" id="admin-toggle-btn" onclick="toggleAdmin()">Admin</button>
       <button class="btn-small" onclick="logout()">Switch User</button>
     </div>
@@ -561,11 +563,12 @@ function switchTab(tab) {
     const isMe = tab === currentUser;
     if (isMe) {
       toolbar.innerHTML = `<div class="paint-toolbar">
-        <span class="paint-label">Paint:</span>
+        <span class="paint-label">Status:</span>
+        <button class="paint-btn ${paintStatus==='cycle'?'active':''}" data-status="cycle" onclick="setPaint('cycle',this)">⟳ Cycle</button>
         <button class="paint-btn ${paintStatus==='A'?'active':''}" data-status="A" onclick="setPaint('A',this)">✓ Available</button>
         <button class="paint-btn ${paintStatus==='M'?'active':''}" data-status="M" onclick="setPaint('M',this)">~ Maybe</button>
         <button class="paint-btn ${paintStatus==='B'?'active':''}" data-status="B" onclick="setPaint('B',this)">✗ Busy</button>
-        <button class="paint-btn ${paintStatus===''?'active':''}" data-status="clear" onclick="setPaint('',this)">Eraser</button>
+        <button class="paint-btn ${paintStatus==='clear'?'active':''}" data-status="clear" onclick="setPaint('clear',this)">Eraser</button>
       </div>`;
     } else {
       toolbar.innerHTML = `<div class="paint-toolbar"><span class="paint-label" style="font-style:italic;">Viewing ${esc(tab)}'s schedule (read-only)</span></div>`;
@@ -591,16 +594,17 @@ function startPaint(day, time) {
   const current = data[key] || '';
   lastPaintedKey = key;
 
-  // If cell is empty, apply the selected paint mode
-  // If cell has a value, cycle: A -> M -> B -> clear -> A
-  if (current === '') {
-    dragPaintVal = paintStatus || CYCLE[0];
-  } else {
+  if (paintStatus === 'cycle') {
+    // Cycle: advance current cell to next status
     const idx = CYCLE.indexOf(current);
     dragPaintVal = CYCLE[(idx + 1) % CYCLE.length];
+  } else if (paintStatus === 'clear') {
+    // Eraser: always clear
+    dragPaintVal = '';
+  } else {
+    // A, M, B: overpaint with selected status
+    dragPaintVal = paintStatus;
   }
-
-  console.log(`[paint] tap key=${key} was="${current}" now="${dragPaintVal}" paintMode=${paintStatus}`);
 
   if (dragPaintVal) data[key] = dragPaintVal;
   else delete data[key];
@@ -609,13 +613,23 @@ function startPaint(day, time) {
 }
 
 function continuePaint(day, time) {
-  if (!isPainting || dragPaintVal === null || !currentUser) return;
+  if (!isPainting || !currentUser) return;
   const key = `${day}|${time}`;
-  // Skip if this is the same cell we just tapped in startPaint
   if (key === lastPaintedKey) return;
   lastPaintedKey = key;
   const data = allData[currentUser] || {};
-  if (dragPaintVal) data[key] = dragPaintVal;
+
+  let val;
+  if (paintStatus === 'cycle') {
+    // Dragging in cycle mode: apply same value as first tap
+    val = dragPaintVal;
+  } else if (paintStatus === 'clear') {
+    val = '';
+  } else {
+    val = paintStatus;
+  }
+
+  if (val) data[key] = val;
   else delete data[key];
   allData[currentUser] = data;
   updateCell(key, data[key]);
