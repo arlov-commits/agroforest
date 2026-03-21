@@ -6,25 +6,26 @@
 <title>Team Scheduler</title>
 <style>
   :root {
-    --bg: #f5f0eb;
+    --bg: #f3ede6;
     --surface: #ffffff;
-    --surface2: #ede8e2;
-    --text: #1a1714;
-    --text-dim: #8a8279;
-    --accent: #c0533a;
-    --accent-hover: #a8442e;
-    --green: #2d6a4f;
-    --green-bg: #d4e8d1;
-    --green-text: #1a4a32;
-    --yellow: #9a7b2f;
-    --yellow-bg: #f5ecd4;
-    --yellow-text: #6a5520;
-    --orange: #b85c1a;
-    --red: #a04520;
-    --red-bg: #f5ddd4;
-    --red-text: #6b2e18;
-    --border: #ddd6cd;
-    --border-strong: #c4bdb5;
+    --surface2: #eae4db;
+    --text: #141210;
+    --text-dim: #6e655c;
+    --accent: #b5422a;
+    --accent-hover: #963522;
+    --green: #1e5e3f;
+    --green-bg: #c8e4c3;
+    --green-text: #0f3d22;
+    --yellow: #7d6218;
+    --yellow-bg: #f2e4b8;
+    --yellow-text: #4a3a0e;
+    --orange: #a8500e;
+    --red: #8e3518;
+    --red-bg: #f0cfc4;
+    --red-text: #5a2210;
+    --border: #d4ccc2;
+    --border-strong: #b5ada4;
+    --lunch-bg: #e4e0da;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
@@ -134,7 +135,7 @@
     position: sticky; left: 0; z-index: 5; background: var(--surface); padding: 4px 8px;
     white-space: nowrap; font-weight: 500; min-width: 70px; color: var(--text-dim);
   }
-  .time-col.lunch-hour { background: #eae4d6; }
+  .time-col.lunch-hour { background: var(--lunch-bg); }
 
   td.cell {
     padding: 6px 2px; cursor: pointer; min-width: 72px; height: 32px; transition: background 0.1s;
@@ -144,12 +145,12 @@
   td.cell[data-val="A"] { background: var(--green-bg); color: var(--green-text); }
   td.cell[data-val="M"] { background: var(--yellow-bg); color: var(--yellow-text); }
   td.cell[data-val="B"] { background: var(--red-bg); color: var(--red-text); }
-  td.cell.lunch-hour { border-left-color: #d5ccb8; border-right-color: #d5ccb8; }
-  td.cell.lunch-hour:not([data-val="A"]):not([data-val="M"]):not([data-val="B"]) { background: #f0ead8; }
+  td.cell.lunch-hour { border-left-color: var(--border-strong); border-right-color: var(--border-strong); }
+  td.cell.lunch-hour:not([data-val="A"]):not([data-val="M"]):not([data-val="B"]) { background: var(--lunch-bg); }
 
   /* Overview */
   td.overview-cell { padding: 3px 2px; min-width: 90px; vertical-align: top; background: var(--surface); }
-  td.overview-cell.lunch-hour:not(.highlight-good) { background: #f0ead8; }
+  td.overview-cell.lunch-hour:not(.highlight-good) { background: var(--lunch-bg); }
   .ov-tags { display: flex; flex-wrap: wrap; gap: 2px; justify-content: center; }
   .ov-tag { font-size: 0.7em; padding: 1px 5px; border-radius: 3px; white-space: nowrap; }
   .ov-tag.avail { background: var(--green-bg); color: var(--green-text); }
@@ -260,7 +261,7 @@
   <header>
     <h2>Team Scheduler</h2>
     <div class="header-right">
-      <span style="font-size:0.7em;color:var(--text-dim);opacity:0.5;">v1.4</span>
+      <span style="font-size:0.7em;color:var(--text-dim);opacity:0.5;">v1.5</span>
       <span><span class="status-dot" id="status-dot"></span><span id="status-text">Connecting...</span></span>
       <button class="btn-small" id="admin-toggle-btn" onclick="toggleAdmin()">Admin</button>
       <button class="btn-small" onclick="logout()">Switch User</button>
@@ -508,6 +509,13 @@ function joinAs() {
   const input = document.getElementById('name-input');
   const name = input.value.trim();
   if (!name) { input.focus(); return; }
+  // Check for existing user (case-insensitive match)
+  const existing = Object.keys(allData).find(n => n.toLowerCase() === name.toLowerCase() && n !== '__admins__');
+  if (existing && existing !== name) {
+    // Name exists with different casing — use the existing one
+    enterApp(existing);
+    return;
+  }
   if (!allData[name]) allData[name] = {};
   enterApp(name);
 }
@@ -561,9 +569,11 @@ function switchTab(tab) {
       <button onclick="addMember()">Add</button></div>`;
   } else {
     const isMe = tab === currentUser;
-    if (isMe) {
+    const canEdit = isMe || (currentUser === 'Art' && isAdmin);
+    if (canEdit) {
+      const editingOther = !isMe ? ` <span style="color:var(--orange);font-size:0.8em;">(editing as admin)</span>` : '';
       toolbar.innerHTML = `<div class="paint-toolbar">
-        <span class="paint-label">Status:</span>
+        <span class="paint-label">Status:${editingOther}</span>
         <button class="paint-btn ${paintStatus==='cycle'?'active':''}" data-status="cycle" onclick="setPaint('cycle',this)">⟳ Cycle</button>
         <button class="paint-btn ${paintStatus==='A'?'active':''}" data-status="A" onclick="setPaint('A',this)">✓ Available</button>
         <button class="paint-btn ${paintStatus==='M'?'active':''}" data-status="M" onclick="setPaint('M',this)">~ Maybe</button>
@@ -573,7 +583,7 @@ function switchTab(tab) {
     } else {
       toolbar.innerHTML = `<div class="paint-toolbar"><span class="paint-label" style="font-style:italic;">Viewing ${esc(tab)}'s schedule (read-only)</span></div>`;
     }
-    renderEditGrid(tab, isMe);
+    renderEditGrid(tab, canEdit);
   }
 }
 
@@ -586,42 +596,53 @@ function setPaint(status, btn) {
 
 let lastPaintedKey = null;
 
+function getEditTarget() {
+  // Art as admin can edit anyone's tab
+  if (currentUser === 'Art' && isAdmin && activeTab !== 'overview' && activeTab !== 'add') return activeTab;
+  return currentUser;
+}
+
+function canEdit() {
+  if (!currentUser) return false;
+  if (activeTab === currentUser) return true;
+  if (currentUser === 'Art' && isAdmin) return true;
+  return false;
+}
+
 function startPaint(day, time) {
-  if (!currentUser || activeTab !== currentUser) return;
+  if (!canEdit()) return;
   isPainting = true;
-  const data = allData[currentUser] || {};
+  const target = getEditTarget();
+  const data = allData[target] || {};
   const key = `${day}|${time}`;
   const current = data[key] || '';
   lastPaintedKey = key;
 
   if (paintStatus === 'cycle') {
-    // Cycle: advance current cell to next status
     const idx = CYCLE.indexOf(current);
     dragPaintVal = CYCLE[(idx + 1) % CYCLE.length];
   } else if (paintStatus === 'clear') {
-    // Eraser: always clear
     dragPaintVal = '';
   } else {
-    // A, M, B: overpaint with selected status
     dragPaintVal = paintStatus;
   }
 
   if (dragPaintVal) data[key] = dragPaintVal;
   else delete data[key];
-  allData[currentUser] = data;
+  allData[target] = data;
   updateCell(key, data[key]);
 }
 
 function continuePaint(day, time) {
-  if (!isPainting || !currentUser) return;
+  if (!isPainting || !canEdit()) return;
   const key = `${day}|${time}`;
   if (key === lastPaintedKey) return;
   lastPaintedKey = key;
-  const data = allData[currentUser] || {};
+  const target = getEditTarget();
+  const data = allData[target] || {};
 
   let val;
   if (paintStatus === 'cycle') {
-    // Dragging in cycle mode: apply same value as first tap
     val = dragPaintVal;
   } else if (paintStatus === 'clear') {
     val = '';
@@ -631,7 +652,7 @@ function continuePaint(day, time) {
 
   if (val) data[key] = val;
   else delete data[key];
-  allData[currentUser] = data;
+  allData[target] = data;
   updateCell(key, data[key]);
 }
 
@@ -643,7 +664,8 @@ function updateCell(key, val) {
 let saveTimeout = null;
 function debounceSave() {
   if (saveTimeout) clearTimeout(saveTimeout);
-  saveTimeout = setTimeout(() => { if (currentUser && allData[currentUser]) saveSchedule(currentUser, allData[currentUser]); }, 500);
+  const target = getEditTarget();
+  saveTimeout = setTimeout(() => { if (target && allData[target]) saveSchedule(target, allData[target]); }, 500);
 }
 
 document.addEventListener('mouseup', () => { if (isPainting) { isPainting = false; dragPaintVal = null; lastPaintedKey = null; debounceSave(); } });
@@ -785,7 +807,8 @@ function addMember() {
   const input = document.getElementById('new-member-name');
   const name = input.value.trim();
   if (!name) { input.focus(); return; }
-  if (allData[name]) { alert(name + ' already exists'); return; }
+  const existing = Object.keys(allData).find(n => n.toLowerCase() === name.toLowerCase() && n !== '__admins__');
+  if (existing) { alert(existing + ' already exists'); return; }
   allData[name] = {};
   saveSchedule(name, {});
   buildTabs(); switchTab(name);
