@@ -213,24 +213,25 @@
   td.overview-cell[data-lvl="3"] { background: var(--t3); }
 
   /* Summary rows */
-  tr.summary-spacer td { height: 10px; border: none; background: transparent; }
+  tr.summary-spacer td { height: 20px; border: none; background: transparent; }
   tr.summary-header td {
     background: var(--surface2); font-weight: 700; font-size: 0.75em; color: var(--text-dim);
     padding: 5px 4px; border-color: var(--border-strong); text-transform: uppercase; letter-spacing: 0.04em;
   }
   td.summary-cell {
-    background: var(--surface); padding: 5px 4px; vertical-align: top;
-    font-size: 0.72em; line-height: 1.6; border-color: var(--border); text-align: left;
+    background: var(--surface); padding: 6px 5px; vertical-align: top;
+    font-size: 0.72em; line-height: 1.4; border-color: var(--border); text-align: left;
   }
-  .best-slot { display: flex; align-items: baseline; gap: 4px; padding: 2px 0; }
-  .best-slot .tier-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; margin-top: 3px; }
+  .best-slot { display: block; padding: 3px 0; margin-bottom: 4px; }
+  .best-slot .slot-top { display: flex; align-items: center; gap: 3px; }
+  .best-slot .tier-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
   .best-slot .tier-dot.t1 { background: var(--t1-dot); }
   .best-slot .tier-dot.t2 { background: var(--t2-dot); }
   .best-slot .tier-dot.t3 { background: var(--t3-dot); }
   .best-slot .sr { font-weight: 700; color: var(--text); }
   .best-slot .sdur { font-weight: 500; color: var(--text-dim); font-size: 0.9em; }
-  .best-slot .sp { color: var(--text-dim); font-size: 0.9em; }
   .best-slot .hot-tag { color: var(--orange); font-style: italic; font-size: 0.88em; }
+  .best-slot .sp { display: block; color: var(--text-dim); font-size: 0.9em; padding-left: 10px; }
 
   /* Modal */
   .modal-bg {
@@ -311,10 +312,10 @@
 
 <div id="app-screen">
   <header>
-    <h2>Team Scheduler</h2>
+    <h2>Team Scheduler <span id="ov-toggle-spot"></span></h2>
     <div id="header-controls"></div>
     <div class="header-right">
-      <span style="font-size:0.7em;color:var(--text-dim);opacity:0.5;">v2.3</span>
+      <span style="font-size:0.7em;color:var(--text-dim);opacity:0.5;">v2.4</span>
       <span><span class="status-dot" id="status-dot"></span><span id="status-text">Connecting...</span></span>
       <button class="btn-small" id="admin-toggle-btn" onclick="toggleAdmin()">Admin</button>
       <button class="btn-small" onclick="logout()">Switch User</button>
@@ -510,6 +511,8 @@ function switchTab(tab){
   activeTab=tab;
   document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.tab===tab));
   const hc=document.getElementById('header-controls'),grid=document.getElementById('grid-container');
+  const ovSpot=document.getElementById('ov-toggle-spot');
+  if(tab!=='overview'&&ovSpot) ovSpot.innerHTML='';
   hc.innerHTML='';
   if(tab==='overview'){
     renderOverview();
@@ -740,7 +743,7 @@ function updateSummaryRow() {
     html += '<td class="summary-cell">';
     for (const s of slots) {
       const tc = s.tier === 1 ? 't1' : s.tier === 2 ? 't2' : 't3';
-      html += `<span class="best-slot"><span class="tier-dot ${tc}"></span><span class="sr">${s.range}</span><span class="sdur">${s.dur}</span><span class="sp">${s.who}</span>${s.hasHot ? ' <span class="hot-tag">(heat)</span>' : ''}</span>`;
+      html += `<span class="best-slot"><span class="slot-top"><span class="tier-dot ${tc}"></span><span class="sr">${s.range}</span><span class="sdur">(${s.dur})</span>${s.hasHot ? '<span class="hot-tag">(heat)</span>' : ''}</span><span class="sp">${s.who}</span></span>`;
     }
     html += '</td>';
   }
@@ -752,10 +755,12 @@ function renderOverview(){
   const names=Object.keys(allData).filter(n=>n!=='__admins__');
   const canClick = !!currentUser && ovEditMode;
 
-  // Toggle button in header
+  // Toggle button in h2 (stays on title row on mobile)
   const hc = document.getElementById('header-controls');
-  if (hc) {
-    hc.innerHTML = currentUser
+  if (hc) hc.innerHTML = '';
+  const ovSpot = document.getElementById('ov-toggle-spot');
+  if (ovSpot) {
+    ovSpot.innerHTML = currentUser
       ? `<span class="ov-edit-toggle ${ovEditMode?'active':''}" onclick="toggleOvEdit()" title="Toggle to click cells and set your availability directly on the overview">↖ ${ovEditMode?'Editing':'Edit'}<span class="info-icon" title="Click cells to set your availability. Cycles: Available → Maybe → Clear" style="margin-left:4px;${ovEditMode?'color:#fff;border-color:rgba(255,255,255,0.5);':''}">i</span></span>`
       : '';
   }
@@ -805,7 +810,7 @@ function renderOverview(){
     html+='<td class="summary-cell">';
     for(const s of slots){
       const tc=s.tier===1?'t1':s.tier===2?'t2':'t3';
-      html+=`<span class="best-slot"><span class="tier-dot ${tc}"></span><span class="sr">${s.range}</span><span class="sdur">${s.dur}</span><span class="sp">${s.who}</span>${s.hasHot?' <span class="hot-tag">(heat)</span>':''}</span>`;
+      html+=`<span class="best-slot"><span class="slot-top"><span class="tier-dot ${tc}"></span><span class="sr">${s.range}</span><span class="sdur">(${s.dur})</span>${s.hasHot?'<span class="hot-tag">(heat)</span>':''}</span><span class="sp">${s.who}</span></span>`;
     }
     html+='</td>';
   }
