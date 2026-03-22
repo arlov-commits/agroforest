@@ -33,14 +33,32 @@
   --t1-dot:#1a8a82;--t2-dot:#b8860b;--t3-dot:#c46a30;
   --font:'Georgia','Times New Roman',serif;--radius:4px;
 }
-[data-theme="forest"] {
-  --bg:#e8e0cc;--surface:#f2ece0;--surface2:#ddd4c0;--text:#2a2818;--text-dim:#6a6450;
-  --accent:#5a7a48;--accent-hover:#4a6838;--green:#3a7a3a;--green-bg:#c0ddb8;--green-text:#1a3a18;
-  --yellow:#8a7828;--yellow-bg:#e8dca0;--yellow-text:#4a4010;--orange:#a06828;--orange-bg:#e8c8a0;--orange-text:#5a3810;
-  --red:#8a4028;--red-bg:#e0baa8;--red-text:#4a2010;--border:#c8bca0;--border-strong:#a89878;--lunch-bg:#d8d0b8;
-  --t1:#c0ddb8;--t1-text:#1a3a18;--t2:#e8dca0;--t2-text:#4a4010;--t3:#b8ccd8;--t3-text:#1a3040;
-  --t1-dot:#3a7a3a;--t2-dot:#8a7828;--t3-dot:#4878a0;
-  --font:'Georgia','Times New Roman',serif;--radius:10px;
+[data-theme="ocean"] {
+  --bg:#1a2a3a;--surface:#223344;--surface2:#2a3e52;--text:#e0e8f0;--text-dim:#8899aa;
+  --accent:#e87060;--accent-hover:#d05848;--green:#50b080;--green-bg:#1a3a2a;--green-text:#a0e8c0;
+  --yellow:#d0a850;--yellow-bg:#2a2a18;--yellow-text:#f0d888;--orange:#e08850;--orange-bg:#2a2218;--orange-text:#f0c088;
+  --red:#e07060;--red-bg:#2a1818;--red-text:#f0a898;--border:#3a4a5a;--border-strong:#4a6070;--lunch-bg:#1e3040;
+  --t1:#1a4a30;--t1-text:#a0e8c0;--t2:#3a3018;--t2-text:#f0d888;--t3:#1a2a40;--t3-text:#88b8e0;
+  --t1-dot:#50b080;--t2-dot:#d0a850;--t3-dot:#6090c0;
+  --font:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;--radius:8px;
+}
+[data-theme="savanna"] {
+  --bg:#f0e0c8;--surface:#f8f0e0;--surface2:#e0d0b0;--text:#3a2010;--text-dim:#7a6040;
+  --accent:#c05020;--accent-hover:#a04018;--green:#5a8040;--green-bg:#c8dca8;--green-text:#2a4018;
+  --yellow:#a08020;--yellow-bg:#f0dca0;--yellow-text:#5a4810;--orange:#c06820;--orange-bg:#f0c8a0;--orange-text:#6a3810;
+  --red:#a83820;--red-bg:#e8b8a0;--red-text:#5a2010;--border:#c8b090;--border-strong:#a89070;--lunch-bg:#ddd0b0;
+  --t1:#c8dca8;--t1-text:#2a4018;--t2:#f0dca0;--t2-text:#5a4810;--t3:#b8c8d0;--t3-text:#2a3840;
+  --t1-dot:#5a8040;--t2-dot:#a08020;--t3-dot:#507090;
+  --font:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;--radius:6px;
+}
+[data-theme="midnight"] {
+  --bg:#0e1a12;--surface:#162218;--surface2:#1e2e22;--text:#d0e0d0;--text-dim:#78a080;
+  --accent:#d0808a;--accent-hover:#b86870;--green:#60aa70;--green-bg:#1a3a20;--green-text:#a0e0a8;
+  --yellow:#c0a850;--yellow-bg:#2a2818;--yellow-text:#e8d888;--orange:#c88850;--orange-bg:#2a2018;--orange-text:#e8c088;
+  --red:#c06868;--red-bg:#2a1818;--red-text:#e8a0a0;--border:#2a4030;--border-strong:#3a5040;--lunch-bg:#1a2818;
+  --t1:#1a4020;--t1-text:#a0e0a8;--t2:#3a3018;--t2-text:#e8d888;--t3:#1a2838;--t3-text:#88b8d8;
+  --t1-dot:#60aa70;--t2-dot:#c0a850;--t3-dot:#6090b0;
+  --font:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;--radius:8px;
 }
 [data-theme="retro"] {
   --bg:#c8c8c8;--surface:#e0e0e0;--surface2:#b0b0b0;--text:#0000aa;--text-dim:#4444aa;
@@ -229,7 +247,7 @@ td.summary-cell { background:var(--surface);padding:6px 5px;vertical-align:top;f
     <h2>Team Scheduler <span id="ov-toggle-spot"></span></h2>
     <div id="header-controls"></div>
     <div class="header-right">
-      <span style="font-size:0.7em;color:var(--text-dim);opacity:0.5;">v2.9</span>
+      <span style="font-size:0.7em;color:var(--text-dim);opacity:0.5;">v3.0</span>
       <span><span class="status-dot" id="status-dot"></span><span id="status-text">…</span></span>
       <button class="theme-btn" onclick="cycleTheme()" title="Change theme">◐</button>
       <button class="btn-small" id="admin-toggle-btn" onclick="toggleAdmin()">Admin</button>
@@ -251,7 +269,7 @@ for(let h=7;h<18;h++)for(let m=0;m<60;m+=30){const hr=h>12?h-12:h;TIMES.push(`${
 function isLunch(t){return t.startsWith('11:00')||t.startsWith('11:30');}
 function isHot(t){return['1:00 PM','1:30 PM','2:00 PM','2:30 PM'].includes(t);}
 const CYCLE=['A','M','B',''],OV_CYCLE=['A','M',''],SS={A:'✓',M:'~',B:'✗'};
-const THEMES=['parchment','ember','persia','forest','retro'];
+const THEMES=['parchment','ember','persia','ocean','savanna','midnight','retro'];
 let U=null,D={},ps='A',ip=false,at='overview',on=false,ia=false,ad={},dpv=null;
 let oe=false,od=false,fd=[];
 // Theme
