@@ -66,7 +66,6 @@ body { font-family:var(--font);background:var(--bg);color:var(--text);min-height
 .existing-users p { font-size:0.9em;margin-bottom:8px;color:var(--text-dim); }
 .user-chip { display:inline-block;padding:6px 14px;margin:4px;border-radius:20px;background:var(--surface);cursor:pointer;font-size:0.9em;border:1px solid var(--border);color:var(--text);font-family:var(--font); }
 .user-chip:hover { border-color:var(--accent);background:var(--surface2); }
-.login-theme-row { margin-top:16px; }
 
 #app-screen { display:none; }
 header { display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;flex-wrap:wrap;gap:4px 8px; }
@@ -224,7 +223,6 @@ td.summary-cell { background:var(--surface);padding:6px 5px;vertical-align:top;f
   <input type="text" id="name-input" placeholder="Your name..." autocomplete="off" onkeydown="if(event.key==='Enter')joinAs()">
   <button class="join-btn" onclick="joinAs()">Join</button>
   <div class="existing-users" id="existing-users"></div>
-  <div class="login-theme-row"><button class="theme-btn" onclick="cycleTheme()" title="Change theme">◐</button></div>
 </div>
 <div id="app-screen">
   <header>
